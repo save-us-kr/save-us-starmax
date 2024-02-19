@@ -48,14 +48,6 @@ android {
         minSdkVersion 19
     }
 
-    dependencies {
-        testImplementation 'org.jetbrains.kotlin:kotlin-test'
-        testImplementation 'org.mockito:mockito-core:5.0.0'
-
-        implementation(fileTree(dir: "src/main/libs", include: ["*.jar"]))
-        //implementation(fileTree(dir: "src/main/libs", include: ["*.aar"]))
-    }
-
     testOptions {
         unitTests.all {
             useJUnitPlatform()
@@ -67,4 +59,11 @@ android {
             }
         }
     }
+}
+
+dependencies {
+    testImplementation 'org.jetbrains.kotlin:kotlin-test'
+    testImplementation 'org.mockito:mockito-core:5.0.0'
+
+    implementation(fileTree(dir: "src/main/libs", include: ["*.jar"]))
 }
