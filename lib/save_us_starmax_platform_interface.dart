@@ -1,3 +1,6 @@
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
+
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import 'save_us_starmax_method_channel.dart';
@@ -25,5 +28,13 @@ abstract class SaveUsStarmaxPlatform extends PlatformInterface {
 
   Future<String?> getPlatformVersion() {
     throw UnimplementedError('platformVersion() has not been implemented.');
+  }
+
+  Future<String?> notify(Map<String, dynamic> param) {
+    throw UnimplementedError();
+  }
+
+  Future<Uint8List?> pairing() {
+    throw UnimplementedError();
   }
 }

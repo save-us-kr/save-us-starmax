@@ -11,7 +11,18 @@ class MethodChannelSaveUsStarmax extends SaveUsStarmaxPlatform {
 
   @override
   Future<String?> getPlatformVersion() async {
-    final version = await methodChannel.invokeMethod<String>('getPlatformVersion');
+    final version =
+        await methodChannel.invokeMethod<String>('getPlatformVersion');
     return version;
+  }
+
+  @override
+  Future<String?> notify(Map<String, dynamic> param) async {
+    return await methodChannel.invokeMethod<String>('notify', param);
+  }
+
+  @override
+  Future<Uint8List?> pairing() async {
+    return await methodChannel.invokeMethod<Uint8List>('pair');
   }
 }
