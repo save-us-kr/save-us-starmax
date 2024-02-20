@@ -10,13 +10,6 @@ class MethodChannelSaveUsStarmax extends SaveUsStarmaxPlatform {
   final methodChannel = const MethodChannel('save_us_starmax');
 
   @override
-  Future<String?> getPlatformVersion() async {
-    final version =
-        await methodChannel.invokeMethod<String>('getPlatformVersion');
-    return version;
-  }
-
-  @override
   Future<String?> notify(Map<String, dynamic> param) async {
     return await methodChannel.invokeMethod<String>('notify', param);
   }
@@ -24,5 +17,42 @@ class MethodChannelSaveUsStarmax extends SaveUsStarmaxPlatform {
   @override
   Future<Uint8List?> pairing() async {
     return await methodChannel.invokeMethod<Uint8List>('pair');
+  }
+
+  @override
+  Future<Uint8List?> setTime() async {
+    return await methodChannel.invokeMethod('setTime');
+  }
+
+  @override
+  Future<Uint8List?> getHealthData() async {
+    return await methodChannel.invokeMethod<Uint8List>('getHealthData');
+  }
+
+  @override
+  Future<Uint8List?> getHealthOpen() async {
+    return await methodChannel.invokeMethod<Uint8List>('getHealthOpen');
+  }
+
+  @override
+  Future<Uint8List?> getState() async {
+    return await methodChannel.invokeMethod<Uint8List>('getState');
+  }
+
+  @override
+  Future<Uint8List?> getPower() async {
+    return await methodChannel.invokeMethod('getPower');
+  }
+
+  @override
+  Future<Uint8List?> getVersion() async {
+    return await methodChannel.invokeMethod('getVersion');
+  }
+
+  @override
+  Future<String?> getPlatformVersion() async {
+    final version =
+        await methodChannel.invokeMethod<String>('getPlatformVersion');
+    return version;
   }
 }

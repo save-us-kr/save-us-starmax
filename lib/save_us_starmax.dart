@@ -15,4 +15,28 @@ class SaveUsStarmax {
   Future<Uint8List?> pairing() {
     return SaveUsStarmaxPlatform.instance.pairing();
   }
+
+  Future<Uint8List?> setTime() async {
+    return SaveUsStarmaxPlatform.instance.setTime();
+  }
+
+  Future<Uint8List?> getHealthData() {
+    return SaveUsStarmaxPlatform.instance.getHealthData();
+  }
+
+  Future<Uint8List?> getHealthOpen() {
+    return SaveUsStarmaxPlatform.instance.getHealthOpen();
+  }
+
+  Future<Uint8List?> getState() {
+    return SaveUsStarmaxPlatform.instance.getState();
+  }
+
+  Future<Uint8List?> getPower() {
+    return SaveUsStarmaxPlatform.instance.getPower();
+  }
+
+  Future<Uint8List?> getVersion() async {
+    return SaveUsStarmaxPlatform.instance.getVersion();
+  }
 }
