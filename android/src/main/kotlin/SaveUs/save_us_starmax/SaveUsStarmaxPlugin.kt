@@ -5,7 +5,7 @@ import androidx.annotation.NonNull
 import com.starmax.bluetoothsdk.MapStarmaxNotify
 import com.starmax.bluetoothsdk.StarmaxSend
 import com.starmax.bluetoothsdk.data.NotifyType
-
+import org.json.JSONObject
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
@@ -28,16 +28,45 @@ class SaveUsStarmaxPlugin : FlutterPlugin, MethodCallHandler {
     override fun onMethodCall(call: MethodCall, result: Result) {
         when (call.method) {
             "notify" -> result.success(notify(call.argument("value")))
+            "getHealthData" -> result.success(getHealthDetail())
+            "getPower" -> result.success(getPower())
+            "getState" -> result.success(getState())
+            "getVersion" -> result.success(getVersion())
+            "getHealthOpen" -> result.success(getHealthOpen())
+            "setTime" -> result.success(setTime())
             "pair" -> result.success(pair())
             "getPlatformVersion" -> result.success("Android ${android.os.Build.VERSION.RELEASE}")
             else -> result.notImplemented()
         }
         Log.d(this.javaClass.simpleName, "callMethod:: ${call.method}")
-
     }
 
     override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
         channel.setMethodCallHandler(null)
+    }
+
+    private fun getHealthOpen(): ByteArray {
+        return StarmaxSend().getHealthOpen()
+    }
+
+    private fun getHealthDetail(): ByteArray {
+        return StarmaxSend().getHealthDetail()
+    }
+
+    private fun getVersion(): ByteArray {
+        return StarmaxSend().getVersion()
+    }
+
+    private fun getPower(): ByteArray {
+        return StarmaxSend().getPower()
+    }
+
+    private fun getState(): ByteArray {
+        return StarmaxSend().getState()
+    }
+
+    private fun setTime(): ByteArray {
+        return StarmaxSend().setTime()
     }
 
     private fun pair(): ByteArray {

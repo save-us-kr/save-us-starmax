@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -20,7 +19,37 @@ class MockSaveUsStarmaxPlatform
 
   @override
   Future<Uint8List?> pairing() {
-    return Future.value(Uint16List(16) as FutureOr<Uint8List?>?);
+    return Future.value(Uint8List(16));
+  }
+
+  @override
+  Future<Uint8List?> setTime() {
+    return Future.value(Uint8List(16));
+  }
+
+  @override
+  Future<Uint8List?> getState() {
+    return Future.value(Uint8List(16));
+  }
+
+  @override
+  Future<Uint8List?> getPower() {
+    return Future.value(Uint8List(16));
+  }
+
+  @override
+  Future<Uint8List?> getVersion() {
+    return Future.value(Uint8List(16));
+  }
+
+  @override
+  Future<Uint8List?> getHealthData() {
+    return Future.value(Uint8List(16));
+  }
+
+  @override
+  Future<Uint8List?> getHealthOpen() {
+    return Future.value(Uint8List(16));
   }
 }
 

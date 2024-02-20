@@ -37,4 +37,28 @@ abstract class SaveUsStarmaxPlatform extends PlatformInterface {
   Future<Uint8List?> pairing() {
     throw UnimplementedError();
   }
+
+  Future<Uint8List?> setTime() {
+    throw UnimplementedError();
+  }
+
+  Future<Uint8List?> getHealthData() {
+    throw UnimplementedError();
+  }
+
+  Future<Uint8List?> getHealthOpen() {
+    throw UnimplementedError();
+  }
+
+  Future<Uint8List?> getState() {
+    throw UnimplementedError();
+  }
+
+  Future<Uint8List?> getPower() {
+    throw UnimplementedError();
+  }
+
+  Future<Uint8List?> getVersion() async {
+    throw UnimplementedError();
+  }
 }
