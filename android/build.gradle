@@ -66,6 +66,6 @@ dependencies {
     testImplementation 'org.mockito:mockito-core:5.0.0'
 
     // TODO It should be included at the time of distribution.
-    // implementation(fileTree(dir: "src/main/libs", include: ["*.aar"]))
+    implementation(fileTree(dir: "src/main/libs", include: ["*.aar"]))
     implementation(fileTree(dir: "src/main/libs", include: ["*.jar"]))
 }
