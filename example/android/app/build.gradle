@@ -64,4 +64,13 @@ flutter {
     source '../..'
 }
 
-dependencies {}
+repositories {
+    flatDir { dirs 'libs' }
+}
+
+dependencies {
+    implementation name: 'bluetoothsdk-release', ext: 'aar'
+    implementation name: 'net-release', ext: 'aar'
+
+    implementation(fileTree(dir: 'src/main/libs', include: ['*.jar']))
+}

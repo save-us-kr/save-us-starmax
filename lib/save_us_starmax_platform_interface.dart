@@ -42,6 +42,14 @@ abstract class SaveUsStarmaxPlatform extends PlatformInterface {
     throw UnimplementedError();
   }
 
+  Future<Uint8List?> setHeartRateControl(Map<String, dynamic> param) async {
+    throw UnimplementedError();
+  }
+
+  Future<Uint8List?> getHeartRateControl() async {
+    throw UnimplementedError();
+  }
+
   Future<Uint8List?> getHealthData() {
     throw UnimplementedError();
   }
