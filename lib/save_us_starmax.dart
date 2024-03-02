@@ -20,6 +20,14 @@ class SaveUsStarmax {
     return SaveUsStarmaxPlatform.instance.setTime();
   }
 
+  Future<Uint8List?> setHeartRateControl(Map<String, dynamic> param) async {
+    return SaveUsStarmaxPlatform.instance.setHeartRateControl(param);
+  }
+
+  Future<Uint8List?> getHeartRateControl() async {
+    return SaveUsStarmaxPlatform.instance.getHeartRateControl();
+  }
+
   Future<Uint8List?> getHealthData() {
     return SaveUsStarmaxPlatform.instance.getHealthData();
   }

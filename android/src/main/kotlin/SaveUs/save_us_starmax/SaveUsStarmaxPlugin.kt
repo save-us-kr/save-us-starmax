@@ -33,6 +33,18 @@ class SaveUsStarmaxPlugin : FlutterPlugin, MethodCallHandler {
             "getState" -> result.success(getState())
             "getVersion" -> result.success(getVersion())
             "getHealthOpen" -> result.success(getHealthOpen())
+            "getHeartRateControl" -> result.success(getHeartRateControl())
+            "setHeartRateControl" -> result.success(
+                setHeartRateControl(
+                    startHour = call.argument("startHour") ?: 0,
+                    startMinute = call.argument("startMinute") ?: 0,
+                    endHour = call.argument("endHour") ?: 23,
+                    endMinute = call.argument("endMinute") ?: 59,
+                    period = call.argument("period") ?: 15,
+                    alarmThreshold = call.argument("alarmThreshold") ?: 60
+                )
+            )
+
             "setTime" -> result.success(setTime())
             "pair" -> result.success(pair())
             "getPlatformVersion" -> result.success("Android ${android.os.Build.VERSION.RELEASE}")
@@ -43,6 +55,10 @@ class SaveUsStarmaxPlugin : FlutterPlugin, MethodCallHandler {
 
     override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
         channel.setMethodCallHandler(null)
+    }
+
+    private fun getHeartRateControl(): ByteArray {
+        return StarmaxSend().getHeartRateControl()
     }
 
     private fun getHealthOpen(): ByteArray {
@@ -63,6 +79,24 @@ class SaveUsStarmaxPlugin : FlutterPlugin, MethodCallHandler {
 
     private fun getState(): ByteArray {
         return StarmaxSend().getState()
+    }
+
+    private fun setHeartRateControl(
+        startHour: Int,
+        startMinute: Int,
+        endHour: Int,
+        endMinute: Int,
+        period: Int,
+        alarmThreshold: Int
+    ): ByteArray {
+        return StarmaxSend().setHeartRateControl(
+            startHour = startHour,
+            startMinute = startMinute,
+            endHour = endHour,
+            endMinute = endMinute,
+            period = period,
+            alarmThreshold = alarmThreshold
+        )
     }
 
     private fun setTime(): ByteArray {

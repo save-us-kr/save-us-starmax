@@ -1,10 +1,10 @@
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:save_us_starmax/save_us_starmax.dart';
-import 'package:save_us_starmax/save_us_starmax_platform_interface.dart';
-import 'package:save_us_starmax/save_us_starmax_method_channel.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
+import 'package:save_us_starmax/save_us_starmax.dart';
+import 'package:save_us_starmax/save_us_starmax_method_channel.dart';
+import 'package:save_us_starmax/save_us_starmax_platform_interface.dart';
 
 class MockSaveUsStarmaxPlatform
     with MockPlatformInterfaceMixin
@@ -49,6 +49,16 @@ class MockSaveUsStarmaxPlatform
 
   @override
   Future<Uint8List?> getHealthOpen() {
+    return Future.value(Uint8List(16));
+  }
+
+  @override
+  Future<Uint8List?> getHeartRateControl() {
+    return Future.value(Uint8List(16));
+  }
+
+  @override
+  Future<Uint8List?> setHeartRateControl(Map<String, dynamic> param) {
     return Future.value(Uint8List(16));
   }
 }
