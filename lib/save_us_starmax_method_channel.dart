@@ -30,6 +30,61 @@ class MethodChannelSaveUsStarmax extends SaveUsStarmaxPlatform {
   }
 
   @override
+  Future<Uint8List?> getSportHistory() async {
+    return await methodChannel.invokeMethod('getSportHistory');
+  }
+
+  @override
+  Future<Uint8List?> getValidHistoryDates() async {
+    return await methodChannel.invokeMethod('getValidHistoryDates');
+  }
+
+  @override
+  Future<Uint8List?> getStepHistory() async {
+    return await methodChannel.invokeMethod('getStepHistory');
+  }
+
+  @override
+  Future<Uint8List?> getHeartRateHistory() async {
+    return await methodChannel.invokeMethod('getHeartRateHistory');
+  }
+
+  @override
+  Future<Uint8List?> getBloodPressureHistory() async {
+    return await methodChannel.invokeMethod('getBloodPressureHistory');
+  }
+
+  @override
+  Future<Uint8List?> getBloodOxygenHistory() async {
+    return await methodChannel.invokeMethod('getBloodOxygenHistory');
+  }
+
+  @override
+  Future<Uint8List?> getPressureHistory() async {
+    return await methodChannel.invokeMethod('getPressureHistory');
+  }
+
+  @override
+  Future<Uint8List?> getMetHistory() async {
+    return await methodChannel.invokeMethod('getMetHistory');
+  }
+
+  @override
+  Future<Uint8List?> getTempHistory() async {
+    return await methodChannel.invokeMethod('getTempHistory');
+  }
+
+  @override
+  Future<Uint8List?> getMaiHistory() async {
+    return await methodChannel.invokeMethod('getMaiHistory');
+  }
+
+  @override
+  Future<Uint8List?> getBloodSugarHistory() async {
+    return await methodChannel.invokeMethod('getBloodSugarHistory');
+  }
+
+  @override
   Future<Uint8List?> getHeartRateControl() async {
     return await methodChannel.invokeMethod('getHeartRateControl');
   }

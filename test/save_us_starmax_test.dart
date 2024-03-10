@@ -61,6 +61,61 @@ class MockSaveUsStarmaxPlatform
   Future<Uint8List?> setHeartRateControl(Map<String, dynamic> param) {
     return Future.value(Uint8List(16));
   }
+
+  @override
+  Future<Uint8List?> getBloodOxygenHistory() {
+    return Future.value(Uint8List(16));
+  }
+
+  @override
+  Future<Uint8List?> getBloodPressureHistory() {
+    return Future.value(Uint8List(16));
+  }
+
+  @override
+  Future<Uint8List?> getBloodSugarHistory() {
+    return Future.value(Uint8List(16));
+  }
+
+  @override
+  Future<Uint8List?> getHeartRateHistory() {
+    return Future.value(Uint8List(16));
+  }
+
+  @override
+  Future<Uint8List?> getMaiHistory() {
+    return Future.value(Uint8List(16));
+  }
+
+  @override
+  Future<Uint8List?> getMetHistory() {
+    return Future.value(Uint8List(16));
+  }
+
+  @override
+  Future<Uint8List?> getPressureHistory() {
+    return Future.value(Uint8List(16));
+  }
+
+  @override
+  Future<Uint8List?> getSportHistory() {
+    return Future.value(Uint8List(16));
+  }
+
+  @override
+  Future<Uint8List?> getStepHistory() {
+    return Future.value(Uint8List(16));
+  }
+
+  @override
+  Future<Uint8List?> getTempHistory() {
+    return Future.value(Uint8List(16));
+  }
+
+  @override
+  Future<Uint8List?> getValidHistoryDates() {
+    return Future.value(Uint8List(16));
+  }
 }
 
 void main() {

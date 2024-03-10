@@ -11,6 +11,7 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
+import java.util.Calendar
 
 /** SaveUsStarmaxPlugin */
 class SaveUsStarmaxPlugin : FlutterPlugin, MethodCallHandler {
@@ -34,6 +35,154 @@ class SaveUsStarmaxPlugin : FlutterPlugin, MethodCallHandler {
             "getVersion" -> result.success(getVersion())
             "getHealthOpen" -> result.success(getHealthOpen())
             "getHeartRateControl" -> result.success(getHeartRateControl())
+
+            "getSportHistory" -> result.success(getSportHistory())
+
+            "getStepHistory" -> {
+                val calendar = Calendar.getInstance()
+
+                calendar.set(
+                    call.argument("year") ?: 0,
+                    call.argument("month") ?: 0,
+                    call.argument("date") ?: 0,
+                    call.argument("hour") ?: 0,
+                    call.argument("minute") ?: 0,
+                    call.argument("second") ?: 0,
+                )
+                return result.success(
+                    getStepHistory(
+                        calendar
+                    )
+                )
+            }
+
+            "getHeartRateHistory" -> {
+                val calendar = Calendar.getInstance()
+
+                calendar.set(
+                    call.argument("year") ?: 0,
+                    call.argument("month") ?: 0,
+                    call.argument("date") ?: 0,
+                    call.argument("hour") ?: 0,
+                    call.argument("minute") ?: 0,
+                    call.argument("second") ?: 0,
+                )
+                return result.success(
+                    getHeartRateHistory(
+                        calendar
+                    )
+                )
+            }
+
+            "getBloodPressureHistory" -> {
+                val calendar = Calendar.getInstance()
+
+                calendar.set(
+                    call.argument("year") ?: 0,
+                    call.argument("month") ?: 0,
+                    call.argument("date") ?: 0,
+                    call.argument("hour") ?: 0,
+                    call.argument("minute") ?: 0,
+                    call.argument("second") ?: 0,
+                )
+                return result.success(
+                    getBloodPressureHistory(
+                        calendar
+                    )
+                )
+            }
+
+            "getBloodOxygenHistory" -> {
+                val calendar = Calendar.getInstance()
+
+                calendar.set(
+                    call.argument("year") ?: 0,
+                    call.argument("month") ?: 0,
+                    call.argument("date") ?: 0,
+                    call.argument("hour") ?: 0,
+                    call.argument("minute") ?: 0,
+                    call.argument("second") ?: 0,
+                )
+                return result.success(
+                    getBloodOxygenHistory(
+                        calendar
+                    )
+                )
+            }
+
+            "getPressureHistory" -> {
+                val calendar = Calendar.getInstance()
+
+                calendar.set(
+                    call.argument("year") ?: 0,
+                    call.argument("month") ?: 0,
+                    call.argument("date") ?: 0,
+                    call.argument("hour") ?: 0,
+                    call.argument("minute") ?: 0,
+                    call.argument("second") ?: 0,
+                )
+                return result.success(
+                    getPressureHistory(
+                        calendar
+                    )
+                )
+            }
+
+            "getMetHistory" -> {
+                val calendar = Calendar.getInstance()
+
+                calendar.set(
+                    call.argument("year") ?: 0,
+                    call.argument("month") ?: 0,
+                    call.argument("date") ?: 0,
+                    call.argument("hour") ?: 0,
+                    call.argument("minute") ?: 0,
+                    call.argument("second") ?: 0,
+                )
+                return result.success(
+                    getMetHistory(
+                        calendar
+                    )
+                )
+            }
+
+
+            "getTempHistory" -> {
+                val calendar = Calendar.getInstance()
+
+                calendar.set(
+                    call.argument("year") ?: 0,
+                    call.argument("month") ?: 0,
+                    call.argument("date") ?: 0,
+                    call.argument("hour") ?: 0,
+                    call.argument("minute") ?: 0,
+                    call.argument("second") ?: 0,
+                )
+                return result.success(
+                    getTempHistory(
+                        calendar
+                    )
+                )
+            }
+
+            "getBloodSugarHistory" -> {
+                val calendar = Calendar.getInstance()
+
+                calendar.set(
+                    call.argument("year") ?: 0,
+                    call.argument("month") ?: 0,
+                    call.argument("date") ?: 0,
+                    call.argument("hour") ?: 0,
+                    call.argument("minute") ?: 0,
+                    call.argument("second") ?: 0,
+                )
+                return result.success(
+                    getBloodSugarHistory(
+                        calendar
+                    )
+                )
+            }
+
             "setHeartRateControl" -> result.success(
                 setHeartRateControl(
                     startHour = call.argument("startHour") ?: 0,
@@ -79,6 +228,42 @@ class SaveUsStarmaxPlugin : FlutterPlugin, MethodCallHandler {
 
     private fun getState(): ByteArray {
         return StarmaxSend().getState()
+    }
+
+    private fun getSportHistory(): ByteArray {
+        return StarmaxSend().getSportHistory()
+    }
+
+    private fun getStepHistory(calendar: Calendar): ByteArray {
+        return StarmaxSend().getStepHistory(calendar)
+    }
+
+    private fun getHeartRateHistory(calendar: Calendar): ByteArray {
+        return StarmaxSend().getHeartRateHistory(calendar)
+    }
+
+    private fun getBloodPressureHistory(calendar: Calendar): ByteArray {
+        return StarmaxSend().getBloodPressureHistory(calendar)
+    }
+
+    private fun getBloodOxygenHistory(calendar: Calendar): ByteArray {
+        return StarmaxSend().getBloodOxygenHistory(calendar)
+    }
+
+    private fun getPressureHistory(calendar: Calendar): ByteArray {
+        return StarmaxSend().getPressureHistory(calendar)
+    }
+
+    private fun getMetHistory(calendar: Calendar): ByteArray {
+        return StarmaxSend().getMetHistory(calendar)
+    }
+
+    private fun getTempHistory(calendar: Calendar): ByteArray {
+        return StarmaxSend().getTempHistory(calendar)
+    }
+
+    private fun getBloodSugarHistory(calendar: Calendar): ByteArray {
+        return StarmaxSend().getBloodSugarHistory(calendar)
     }
 
     private fun setHeartRateControl(
