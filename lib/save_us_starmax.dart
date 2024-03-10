@@ -32,40 +32,40 @@ class SaveUsStarmax {
     return SaveUsStarmaxPlatform.instance.getValidHistoryDates();
   }
 
-  Future<Uint8List?> getStepHistory() {
-    return SaveUsStarmaxPlatform.instance.getStepHistory();
+  Future<Uint8List?> getStepHistory(Map<String, dynamic> param) {
+    return SaveUsStarmaxPlatform.instance.getStepHistory(param);
   }
 
-  Future<Uint8List?> getHeartRateHistory() {
-    return SaveUsStarmaxPlatform.instance.getHeartRateHistory();
+  Future<Uint8List?> getHeartRateHistory(Map<String, dynamic> param) {
+    return SaveUsStarmaxPlatform.instance.getHeartRateHistory(param);
   }
 
-  Future<Uint8List?> getBloodPressureHistory() {
-    return SaveUsStarmaxPlatform.instance.getBloodPressureHistory();
+  Future<Uint8List?> getBloodPressureHistory(Map<String, dynamic> param) {
+    return SaveUsStarmaxPlatform.instance.getBloodPressureHistory(param);
   }
 
-  Future<Uint8List?> getBloodOxygenHistory() {
-    return SaveUsStarmaxPlatform.instance.getBloodOxygenHistory();
+  Future<Uint8List?> getBloodOxygenHistory(Map<String, dynamic> param) {
+    return SaveUsStarmaxPlatform.instance.getBloodOxygenHistory(param);
   }
 
-  Future<Uint8List?> getPressureHistory() {
-    return SaveUsStarmaxPlatform.instance.getPressureHistory();
+  Future<Uint8List?> getPressureHistory(Map<String, dynamic> param) {
+    return SaveUsStarmaxPlatform.instance.getPressureHistory(param);
   }
 
-  Future<Uint8List?> getMetHistory() {
-    return SaveUsStarmaxPlatform.instance.getMetHistory();
+  Future<Uint8List?> getMetHistory(Map<String, dynamic> param) {
+    return SaveUsStarmaxPlatform.instance.getMetHistory(param);
   }
 
-  Future<Uint8List?> getTempHistory() {
-    return SaveUsStarmaxPlatform.instance.getTempHistory();
+  Future<Uint8List?> getTempHistory(Map<String, dynamic> param) {
+    return SaveUsStarmaxPlatform.instance.getTempHistory(param);
   }
 
-  Future<Uint8List?> getMaiHistory() {
-    return SaveUsStarmaxPlatform.instance.getMaiHistory();
+  Future<Uint8List?> getMaiHistory(Map<String, dynamic> param) {
+    return SaveUsStarmaxPlatform.instance.getMaiHistory(param);
   }
 
-  Future<Uint8List?> getBloodSugarHistory() {
-    return SaveUsStarmaxPlatform.instance.getBloodSugarHistory();
+  Future<Uint8List?> getBloodSugarHistory(Map<String, dynamic> param) {
+    return SaveUsStarmaxPlatform.instance.getBloodSugarHistory(param);
   }
 
   Future<Uint8List?> getHeartRateControl() {
