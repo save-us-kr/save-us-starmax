@@ -1,11 +1,10 @@
-import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:save_us_starmax/save_us_starmax.dart';
-import 'package:save_us_starmax/save_us_starmax_platform_interface.dart';
-import 'package:save_us_starmax/save_us_starmax_method_channel.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
+import 'package:save_us_starmax/save_us_starmax.dart';
+import 'package:save_us_starmax/save_us_starmax_method_channel.dart';
+import 'package:save_us_starmax/save_us_starmax_platform_interface.dart';
 
 class MockSaveUsStarmaxPlatform
     with MockPlatformInterfaceMixin
@@ -20,7 +19,102 @@ class MockSaveUsStarmaxPlatform
 
   @override
   Future<Uint8List?> pairing() {
-    return Future.value(Uint16List(16) as FutureOr<Uint8List?>?);
+    return Future.value(Uint8List(16));
+  }
+
+  @override
+  Future<Uint8List?> setTime() {
+    return Future.value(Uint8List(16));
+  }
+
+  @override
+  Future<Uint8List?> getState() {
+    return Future.value(Uint8List(16));
+  }
+
+  @override
+  Future<Uint8List?> getPower() {
+    return Future.value(Uint8List(16));
+  }
+
+  @override
+  Future<Uint8List?> getVersion() {
+    return Future.value(Uint8List(16));
+  }
+
+  @override
+  Future<Uint8List?> getHealthData() {
+    return Future.value(Uint8List(16));
+  }
+
+  @override
+  Future<Uint8List?> getHealthOpen() {
+    return Future.value(Uint8List(16));
+  }
+
+  @override
+  Future<Uint8List?> getHeartRateControl() {
+    return Future.value(Uint8List(16));
+  }
+
+  @override
+  Future<Uint8List?> setHeartRateControl(Map<String, dynamic> param) {
+    return Future.value(Uint8List(16));
+  }
+
+  @override
+  Future<Uint8List?> getBloodOxygenHistory() {
+    return Future.value(Uint8List(16));
+  }
+
+  @override
+  Future<Uint8List?> getBloodPressureHistory() {
+    return Future.value(Uint8List(16));
+  }
+
+  @override
+  Future<Uint8List?> getBloodSugarHistory() {
+    return Future.value(Uint8List(16));
+  }
+
+  @override
+  Future<Uint8List?> getHeartRateHistory() {
+    return Future.value(Uint8List(16));
+  }
+
+  @override
+  Future<Uint8List?> getMaiHistory() {
+    return Future.value(Uint8List(16));
+  }
+
+  @override
+  Future<Uint8List?> getMetHistory() {
+    return Future.value(Uint8List(16));
+  }
+
+  @override
+  Future<Uint8List?> getPressureHistory() {
+    return Future.value(Uint8List(16));
+  }
+
+  @override
+  Future<Uint8List?> getSportHistory() {
+    return Future.value(Uint8List(16));
+  }
+
+  @override
+  Future<Uint8List?> getStepHistory() {
+    return Future.value(Uint8List(16));
+  }
+
+  @override
+  Future<Uint8List?> getTempHistory() {
+    return Future.value(Uint8List(16));
+  }
+
+  @override
+  Future<Uint8List?> getValidHistoryDates() {
+    return Future.value(Uint8List(16));
   }
 }
 
