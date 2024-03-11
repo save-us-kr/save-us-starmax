@@ -23,4 +23,5 @@
     BloodSugar;
 9
 }
+HistoryType.valueOf( 3.toString() )
 ```
