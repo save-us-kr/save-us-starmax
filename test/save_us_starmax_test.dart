@@ -113,7 +113,7 @@ class MockSaveUsStarmaxPlatform
   }
 
   @override
-  Future<Uint8List?> getValidHistoryDates() {
+  Future<Uint8List?> getValidHistoryDates(Map<String, dynamic> param) {
     return Future.value(Uint8List(16));
   }
 }
