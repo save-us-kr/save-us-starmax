@@ -35,8 +35,8 @@ class MethodChannelSaveUsStarmax extends SaveUsStarmaxPlatform {
   }
 
   @override
-  Future<Uint8List?> getValidHistoryDates() async {
-    return await methodChannel.invokeMethod('getValidHistoryDates');
+  Future<Uint8List?> getValidHistoryDates(Map<String, dynamic> param) async {
+    return await methodChannel.invokeMethod('getValidHistoryDates', param);
   }
 
   @override

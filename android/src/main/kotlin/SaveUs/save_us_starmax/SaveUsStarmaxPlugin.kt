@@ -4,7 +4,7 @@ import android.util.Log
 import androidx.annotation.NonNull
 import com.starmax.bluetoothsdk.MapStarmaxNotify
 import com.starmax.bluetoothsdk.StarmaxSend
-import com.starmax.bluetoothsdk.data.NotifyType
+import com.starmax.bluetoothsdk.data.*
 import org.json.JSONObject
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodCall
@@ -182,6 +182,11 @@ class SaveUsStarmaxPlugin : FlutterPlugin, MethodCallHandler {
                 )
             }
 
+            "getValidHistoryDates" -> {
+                val historyType: HistoryType = getHistoryType(call.argument("historyType") ?: 0)
+                result.success(getValidHistoryDates(historyType))
+            }
+
             "setHeartRateControl" -> result.success(
                 setHeartRateControl(
                     startHour = call.argument("startHour") ?: 0,
@@ -203,6 +208,22 @@ class SaveUsStarmaxPlugin : FlutterPlugin, MethodCallHandler {
 
     override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
         channel.setMethodCallHandler(null)
+    }
+
+    private fun getHistoryType(param: Int): HistoryType {
+        return when (param) {
+            0 -> HistoryType.Sport
+            1 -> HistoryType.Step
+            2 -> HistoryType.HeartRate
+            3 -> HistoryType.BloodPressure
+            4 -> HistoryType.BloodOxygen
+            5 -> HistoryType.Pressure
+            6 -> HistoryType.Met
+            7 -> HistoryType.Temp
+            8 -> HistoryType.Mai
+            9 -> HistoryType.BloodSugar
+            else -> HistoryType.HeartRate
+        }
     }
 
     private fun getHeartRateControl(): ByteArray {
@@ -287,6 +308,10 @@ class SaveUsStarmaxPlugin : FlutterPlugin, MethodCallHandler {
             this.javaClass.simpleName, "getBloodSugarHistory:: $calendar"
         )
         return StarmaxSend().getBloodSugarHistory(calendar)
+    }
+
+    private fun getValidHistoryDates(historyType: HistoryType): ByteArray {
+        return StarmaxSend().getValidHistoryDates(historyType)
     }
 
     private fun setHeartRateControl(

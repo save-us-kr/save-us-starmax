@@ -50,7 +50,7 @@ abstract class SaveUsStarmaxPlatform extends PlatformInterface {
     throw UnimplementedError();
   }
 
-  Future<Uint8List?> getValidHistoryDates() {
+  Future<Uint8List?> getValidHistoryDates(Map<String, dynamic> param) {
     throw UnimplementedError();
   }
 

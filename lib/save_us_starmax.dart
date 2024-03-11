@@ -28,8 +28,8 @@ class SaveUsStarmax {
     return SaveUsStarmaxPlatform.instance.getSportHistory();
   }
 
-  Future<Uint8List?> getValidHistoryDates() {
-    return SaveUsStarmaxPlatform.instance.getValidHistoryDates();
+  Future<Uint8List?> getValidHistoryDates(Map<String, dynamic> param) {
+    return SaveUsStarmaxPlatform.instance.getValidHistoryDates(param);
   }
 
   Future<Uint8List?> getStepHistory(Map<String, dynamic> param) {
