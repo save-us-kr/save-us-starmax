@@ -146,7 +146,6 @@ class SaveUsStarmaxPlugin : FlutterPlugin, MethodCallHandler {
                 )
             }
 
-
             "getTempHistory" -> {
                 val calendar = Calendar.getInstance()
 
@@ -235,34 +234,58 @@ class SaveUsStarmaxPlugin : FlutterPlugin, MethodCallHandler {
     }
 
     private fun getStepHistory(calendar: Calendar): ByteArray {
+        Log.d(
+            this.javaClass.simpleName, "getStepHistory:: $calendar"
+        )
         return StarmaxSend().getStepHistory(calendar)
     }
 
     private fun getHeartRateHistory(calendar: Calendar): ByteArray {
+        Log.d(
+            this.javaClass.simpleName, "getHeartRateHistory:: $calendar"
+        )
         return StarmaxSend().getHeartRateHistory(calendar)
     }
 
     private fun getBloodPressureHistory(calendar: Calendar): ByteArray {
+        Log.d(
+            this.javaClass.simpleName, "getBloodPressureHistory:: $calendar"
+        )
         return StarmaxSend().getBloodPressureHistory(calendar)
     }
 
     private fun getBloodOxygenHistory(calendar: Calendar): ByteArray {
+        Log.d(
+            this.javaClass.simpleName, "getBloodOxygenHistory:: $calendar"
+        )
         return StarmaxSend().getBloodOxygenHistory(calendar)
     }
 
     private fun getPressureHistory(calendar: Calendar): ByteArray {
+        Log.d(
+            this.javaClass.simpleName, "getPressureHistory:: $calendar"
+        )
         return StarmaxSend().getPressureHistory(calendar)
     }
 
     private fun getMetHistory(calendar: Calendar): ByteArray {
+        Log.d(
+            this.javaClass.simpleName, "getMetHistory:: $calendar"
+        )
         return StarmaxSend().getMetHistory(calendar)
     }
 
     private fun getTempHistory(calendar: Calendar): ByteArray {
+        Log.d(
+            this.javaClass.simpleName, "getTempHistory:: $calendar"
+        )
         return StarmaxSend().getTempHistory(calendar)
     }
 
     private fun getBloodSugarHistory(calendar: Calendar): ByteArray {
+        Log.d(
+            this.javaClass.simpleName, "getBloodSugarHistory:: $calendar"
+        )
         return StarmaxSend().getBloodSugarHistory(calendar)
     }
 
@@ -299,11 +322,9 @@ class SaveUsStarmaxPlugin : FlutterPlugin, MethodCallHandler {
 
                 if (response.type == NotifyType.CrcFailure) {
                     Log.d(this.javaClass.simpleName, "onCharacteristicChanged :: crc failure")
-                    return value.joinToString("") { "%02x".format(it) }
                 }
                 if (response.type == NotifyType.Failure) {
                     Log.d(this.javaClass.simpleName, "onCharacteristicChanged :: failure")
-                    return value.joinToString("") { "%02x".format(it) }
                 }
                 Log.d(this.javaClass.simpleName, "${response.type} :: ${response.toJson()}")
                 return response.toJson()
