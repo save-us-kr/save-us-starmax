@@ -38,6 +38,10 @@ abstract class SaveUsStarmaxPlatform extends PlatformInterface {
     throw UnimplementedError();
   }
 
+  Future<Uint8List?> reset() {
+    throw UnimplementedError();
+  }
+
   Future<Uint8List?> setTime() {
     throw UnimplementedError();
   }

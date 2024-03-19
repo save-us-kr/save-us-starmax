@@ -20,6 +20,11 @@ class MethodChannelSaveUsStarmax extends SaveUsStarmaxPlatform {
   }
 
   @override
+  Future<Uint8List?> reset() async{
+    return await methodChannel.invokeMethod<Uint8List>('reset');
+  }
+
+  @override
   Future<Uint8List?> setTime() async {
     return await methodChannel.invokeMethod('setTime');
   }

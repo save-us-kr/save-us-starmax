@@ -16,6 +16,10 @@ class SaveUsStarmax {
     return SaveUsStarmaxPlatform.instance.pairing();
   }
 
+  Future<Uint8List?> reset() {
+    return SaveUsStarmaxPlatform.instance.reset();
+  }
+
   Future<Uint8List?> setTime() {
     return SaveUsStarmaxPlatform.instance.setTime();
   }
