@@ -199,6 +199,7 @@ class SaveUsStarmaxPlugin : FlutterPlugin, MethodCallHandler {
             )
 
             "setTime" -> result.success(setTime())
+            "reset" -> result.success(reset())
             "pair" -> result.success(pair())
             "getPlatformVersion" -> result.success("Android ${android.os.Build.VERSION.RELEASE}")
             else -> result.notImplemented()
@@ -334,6 +335,10 @@ class SaveUsStarmaxPlugin : FlutterPlugin, MethodCallHandler {
 
     private fun setTime(): ByteArray {
         return StarmaxSend().setTime()
+    }
+
+    private fun reset(): ByteArray {
+        return StarmaxSend().reset()
     }
 
     private fun pair(): ByteArray {

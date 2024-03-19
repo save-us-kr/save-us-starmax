@@ -23,6 +23,11 @@ class MockSaveUsStarmaxPlatform
   }
 
   @override
+  Future<Uint8List?> reset() {
+    return Future.value(Uint8List(16));
+  }
+
+  @override
   Future<Uint8List?> setTime() {
     return Future.value(Uint8List(16));
   }
