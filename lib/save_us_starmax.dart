@@ -20,8 +20,16 @@ class SaveUsStarmax {
     return SaveUsStarmaxPlatform.instance.reset();
   }
 
+  Future<Uint8List?> setState(Map<String, dynamic> param) {
+    return SaveUsStarmaxPlatform.instance.setState(param);
+  }
+
   Future<Uint8List?> setTime() {
     return SaveUsStarmaxPlatform.instance.setTime();
+  }
+
+  Future<Uint8List?> setUserInfo(Map<String, dynamic> param) {
+    return SaveUsStarmaxPlatform.instance.setUserInfo(param);
   }
 
   Future<Uint8List?> setHeartRateControl(Map<String, dynamic> param) {

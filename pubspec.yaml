@@ -1,6 +1,6 @@
 name: save_us_starmax
 description: plugin for using starmax.
-version: 1.0.1
+version: 1.0.3
 homepage: https://github.com/save-us-kr/save-us-starmax
 
 environment:
