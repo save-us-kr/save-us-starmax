@@ -42,7 +42,15 @@ abstract class SaveUsStarmaxPlatform extends PlatformInterface {
     throw UnimplementedError();
   }
 
+  Future<Uint8List?> setState(Map<String, dynamic> param) {
+    throw UnimplementedError();
+  }
+
   Future<Uint8List?> setTime() {
+    throw UnimplementedError();
+  }
+
+  Future<Uint8List?> setUserInfo(Map<String, dynamic> param) {
     throw UnimplementedError();
   }
 

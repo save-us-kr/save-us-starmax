@@ -198,6 +198,27 @@ class SaveUsStarmaxPlugin : FlutterPlugin, MethodCallHandler {
                 )
             )
 
+            "setState" -> result.success(
+                setState(
+                    timeFormat = call.argument("timeFormat") ?: 1,
+                    unitFormat = call.argument("unitFormat") ?: 0,
+                    tempFormat = call.argument("tempFormat") ?: 0,
+                    language = call.argument("language") ?: 9,
+                    backlighting = call.argument("backlighting") ?: 15,
+                    screen = call.argument("screen") ?: 70,
+                    wristUp = call.argument("wristUp") ?: true
+                )
+            )
+
+            "setUserInfo" -> result.success(
+                setUserInfo(
+                    sex = call.argument("sex") ?: 0,
+                    age = call.argument("age") ?: 55,
+                    height = call.argument("height") ?: 165,
+                    weight = call.argument("weight") ?: 60
+                )
+            )
+
             "setTime" -> result.success(setTime())
             "reset" -> result.success(reset())
             "pair" -> result.success(pair())
@@ -211,6 +232,7 @@ class SaveUsStarmaxPlugin : FlutterPlugin, MethodCallHandler {
         channel.setMethodCallHandler(null)
     }
 
+    // HistoryType
     private fun getHistoryType(param: Int): HistoryType {
         return when (param) {
             0 -> HistoryType.Sport
@@ -227,34 +249,42 @@ class SaveUsStarmaxPlugin : FlutterPlugin, MethodCallHandler {
         }
     }
 
+    // 14.1.Get Heart Rate Detection Interval and Range
     private fun getHeartRateControl(): ByteArray {
         return StarmaxSend().getHeartRateControl()
     }
 
+    // 12.1.Get Health Data Detection Switch
     private fun getHealthOpen(): ByteArray {
         return StarmaxSend().getHealthOpen()
     }
 
+    // 11.Get Current Device Health Data
     private fun getHealthDetail(): ByteArray {
         return StarmaxSend().getHealthDetail()
     }
 
+    // 7.Get Device Firmware Version Information
     private fun getVersion(): ByteArray {
         return StarmaxSend().getVersion()
     }
 
+    // 6.Get Battery Level
     private fun getPower(): ByteArray {
         return StarmaxSend().getPower()
     }
 
+    // 2.1.Get Device Status
     private fun getState(): ByteArray {
         return StarmaxSend().getState()
     }
 
+    // 25.Synchronize Sports Data
     private fun getSportHistory(): ByteArray {
         return StarmaxSend().getSportHistory()
     }
 
+    // 26.Synchronize Data of Steps/Sleep
     private fun getStepHistory(calendar: Calendar): ByteArray {
         Log.d(
             this.javaClass.simpleName, "getStepHistory:: $calendar"
@@ -262,6 +292,7 @@ class SaveUsStarmaxPlugin : FlutterPlugin, MethodCallHandler {
         return StarmaxSend().getStepHistory(calendar)
     }
 
+    // 27.Synchronize Heart Rate Data
     private fun getHeartRateHistory(calendar: Calendar): ByteArray {
         Log.d(
             this.javaClass.simpleName, "getHeartRateHistory:: $calendar"
@@ -269,6 +300,7 @@ class SaveUsStarmaxPlugin : FlutterPlugin, MethodCallHandler {
         return StarmaxSend().getHeartRateHistory(calendar)
     }
 
+    // 28.Synchronize Blood Pressure Data
     private fun getBloodPressureHistory(calendar: Calendar): ByteArray {
         Log.d(
             this.javaClass.simpleName, "getBloodPressureHistory:: $calendar"
@@ -276,6 +308,7 @@ class SaveUsStarmaxPlugin : FlutterPlugin, MethodCallHandler {
         return StarmaxSend().getBloodPressureHistory(calendar)
     }
 
+    // 29.Synchronize Blood Oxygen Data
     private fun getBloodOxygenHistory(calendar: Calendar): ByteArray {
         Log.d(
             this.javaClass.simpleName, "getBloodOxygenHistory:: $calendar"
@@ -283,6 +316,7 @@ class SaveUsStarmaxPlugin : FlutterPlugin, MethodCallHandler {
         return StarmaxSend().getBloodOxygenHistory(calendar)
     }
 
+    // 30.Synchronize Stress Data
     private fun getPressureHistory(calendar: Calendar): ByteArray {
         Log.d(
             this.javaClass.simpleName, "getPressureHistory:: $calendar"
@@ -290,6 +324,7 @@ class SaveUsStarmaxPlugin : FlutterPlugin, MethodCallHandler {
         return StarmaxSend().getPressureHistory(calendar)
     }
 
+    // 31.Synchronize MET Data
     private fun getMetHistory(calendar: Calendar): ByteArray {
         Log.d(
             this.javaClass.simpleName, "getMetHistory:: $calendar"
@@ -297,6 +332,7 @@ class SaveUsStarmaxPlugin : FlutterPlugin, MethodCallHandler {
         return StarmaxSend().getMetHistory(calendar)
     }
 
+    // 32.Synchronize Temperature Data
     private fun getTempHistory(calendar: Calendar): ByteArray {
         Log.d(
             this.javaClass.simpleName, "getTempHistory:: $calendar"
@@ -304,6 +340,7 @@ class SaveUsStarmaxPlugin : FlutterPlugin, MethodCallHandler {
         return StarmaxSend().getTempHistory(calendar)
     }
 
+    // 35.Synchronize Blood Glucose Date
     private fun getBloodSugarHistory(calendar: Calendar): ByteArray {
         Log.d(
             this.javaClass.simpleName, "getBloodSugarHistory:: $calendar"
@@ -311,10 +348,12 @@ class SaveUsStarmaxPlugin : FlutterPlugin, MethodCallHandler {
         return StarmaxSend().getBloodSugarHistory(calendar)
     }
 
+    // 34.Synchronize Valid Date of Historical Data
     private fun getValidHistoryDates(historyType: HistoryType): ByteArray {
         return StarmaxSend().getValidHistoryDates(historyType)
     }
 
+    // 14.2.Set Heart Rate Detection Interval and Range
     private fun setHeartRateControl(
         startHour: Int,
         startMinute: Int,
@@ -333,18 +372,50 @@ class SaveUsStarmaxPlugin : FlutterPlugin, MethodCallHandler {
         )
     }
 
+    // 2.2.Set Device Status
+    private fun setState(
+        timeFormat: Int,
+        unitFormat: Int,
+        tempFormat: Int,
+        language: Int,
+        backlighting: Int,
+        screen: Int,
+        wristUp: Boolean
+    ): ByteArray {
+        return StarmaxSend().setState(
+            timeFormat = timeFormat,
+            unitFormat = unitFormat,
+            tempFormat = tempFormat,
+            language = language,
+            backlighting = backlighting,
+            screen = screen,
+            wristUp = wristUp
+        )
+    }
+
+    // 8.Set Time Zone
     private fun setTime(): ByteArray {
         return StarmaxSend().setTime()
     }
 
+    // 9.Set User Information
+    private fun setUserInfo(sex: Int, age: Int, height: Int, weight: Int): ByteArray {
+        return StarmaxSend().setUserInfo(sex = sex, age = age, height = height, weight = weight)
+    }
+
+    // 13.Reset
+    // TODO return value error
     private fun reset(): ByteArray {
         return StarmaxSend().reset()
     }
 
+    // 1.Pairing Command
     private fun pair(): ByteArray {
         return StarmaxSend().pair()
     }
 
+    // Pass the Bluetooth data packet returned by the device to the SDK
+    // in the Bluetooth system callback function onCharacteristicChanged()
     private fun notify(value: ByteArray?): String {
         if (value != null) {
             try {

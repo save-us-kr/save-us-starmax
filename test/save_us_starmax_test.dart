@@ -28,7 +28,17 @@ class MockSaveUsStarmaxPlatform
   }
 
   @override
+  Future<Uint8List?> setState(Map<String, dynamic> param) {
+    return Future.value(Uint8List(16));
+  }
+
+  @override
   Future<Uint8List?> setTime() {
+    return Future.value(Uint8List(16));
+  }
+
+  @override
+  Future<Uint8List?> setUserInfo(Map<String, dynamic> param) {
     return Future.value(Uint8List(16));
   }
 

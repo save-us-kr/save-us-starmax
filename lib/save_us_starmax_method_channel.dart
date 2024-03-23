@@ -20,13 +20,23 @@ class MethodChannelSaveUsStarmax extends SaveUsStarmaxPlatform {
   }
 
   @override
-  Future<Uint8List?> reset() async{
+  Future<Uint8List?> reset() async {
     return await methodChannel.invokeMethod<Uint8List>('reset');
+  }
+
+  @override
+  Future<Uint8List?> setState(Map<String, dynamic> param) async {
+    return await methodChannel.invokeMethod<Uint8List>('setState', param);
   }
 
   @override
   Future<Uint8List?> setTime() async {
     return await methodChannel.invokeMethod('setTime');
+  }
+
+  @override
+  Future<Uint8List?> setUserInfo(Map<String, dynamic> param) async {
+    return await methodChannel.invokeMethod('setUserInfo', param);
   }
 
   @override
