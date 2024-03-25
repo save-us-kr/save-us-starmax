@@ -106,7 +106,7 @@ class _MyAppState extends State<MyApp> {
         }
       }
     });
-    FlutterBluePlus.events.onDiscoveredServices.listen((ds) {
+    FlutterBluePlus.events.onDiscoveredServices.listen((ds) async {
       if (kDebugMode) {
         print('onDiscoveredServices:: ${ds.services.length}');
       }
@@ -299,15 +299,15 @@ class _MyAppState extends State<MyApp> {
                 onPressed: () async {
                   final starmaxArr =
                       await _saveUsStarmaxPlugin.getHeartRateHistory({
-                    'year': 2024,
-                    'month': 3 - 1,
-                    'date': 24,
+                    'year': 0,
+                    'month': 0,
+                    'date': 0,
                     'hour': 0,
                     'minute': 0,
                     'second': 0,
                   });
                   if (starmaxArr != null) {
-                    _request(_devices[_index], starmaxArr);
+                    await _request(_devices[_index], starmaxArr);
                   }
                   setState(() => _starmaxMap['HeartRateHistory'] = starmaxArr);
                 },
