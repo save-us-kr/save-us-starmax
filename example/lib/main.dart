@@ -1,50 +1,230 @@
-import 'package:flutter/material.dart';
 import 'dart:async';
+import 'dart:convert';
 
-import 'package:flutter/services.dart';
+import 'package:device_info_plus/device_info_plus.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:save_us_starmax/save_us_starmax.dart';
+import 'package:save_us_starmax/save_us_starmax_platform_interface.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-void main() {
-  runApp(const MyApp());
+Future main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await dotenv.load(
+    fileName: '.env',
+  );
+  runApp(MyApp(
+    prefs: await SharedPreferences.getInstance(),
+  ));
 }
 
 class MyApp extends StatefulWidget {
-  const MyApp({super.key});
+  const MyApp({
+    super.key,
+    required this.prefs,
+  });
+  final SharedPreferences prefs;
 
   @override
   State<MyApp> createState() => _MyAppState();
 }
 
 class _MyAppState extends State<MyApp> {
-  String _platformVersion = 'Unknown';
   final _saveUsStarmaxPlugin = SaveUsStarmax();
 
   @override
   void initState() {
     super.initState();
-    initPlatformState();
-  }
+    requestPermissionForAndroid();
+    FlutterBluePlus.events.onConnectionStateChanged.listen((cs) {
+      final status = cs.connectionState == BluetoothConnectionState.connected;
 
-  // Platform messages are asynchronous, so we initialize in an async method.
-  Future<void> initPlatformState() async {
-    String platformVersion;
-    // Platform messages may fail, so we use a try/catch PlatformException.
-    // We also handle the message potentially returning null.
-    try {
-      platformVersion = await _saveUsStarmaxPlugin.getPlatformVersion() ??
-          'Unknown platform version';
-    } on PlatformException {
-      platformVersion = 'Failed to get platform version.';
-    }
-
-    // If the widget was removed from the tree while the asynchronous platform
-    // message was in flight, we want to discard the reply rather than calling
-    // setState to update our non-existent appearance.
-    if (!mounted) return;
-
-    setState(() {
-      _platformVersion = platformVersion;
+      if (!status) {
+        if (kDebugMode) {
+          print('onConnectionStateChanged:: ${cs.device.advName}');
+        }
+        _connect(cs.device);
+      }
+      _connectionState = cs.connectionState;
     });
+    FlutterBluePlus.scanResults.listen((results) {
+      for (final result in results) {
+        if (BluetoothConnectionState.disconnected == _connectionState) {
+          if (kDebugMode) {
+            print('scanResult:: ${result.device.advName}');
+          }
+          _connect(result.device);
+        }
+      }
+      if (kDebugMode) {
+        print('scanResults:: ${results.length}');
+      }
+    });
+    FlutterBluePlus.isScanning.listen(
+      (state) {
+        if (kDebugMode) {
+          print('isScanning:: $state');
+        }
+      },
+    );
+
+    FlutterBluePlus.events.onMtuChanged.listen((mtu) async {
+      for (final s in (await mtu.device.discoverServices())
+          .where((e) => e.serviceUuid == Guid(_serviceUuid))) {
+        for (final c in s.characteristics.where(
+            (e) => e.characteristicUuid == Guid(_notifyCharacteristicUUID))) {
+          for (final d in c.descriptors) {
+            try {
+              await d.write([1, 0]);
+            } catch (error) {
+              if (error is FlutterBluePlusException) {
+                switch (error.code) {
+                  case 133:
+                    break;
+                }
+                if (kDebugMode) {
+                  print('onMtuChanged:: $error');
+                }
+              } else {
+                rethrow;
+              }
+            }
+          }
+          if (await c.setNotifyValue(true)) {
+            if (kDebugMode) {
+              print(
+                'authenticatedSignedWrites: ${c.properties.authenticatedSignedWrites}',
+              );
+            }
+            return;
+          }
+        }
+      }
+    });
+    FlutterBluePlus.events.onDiscoveredServices.listen((ds) {
+      if (kDebugMode) {
+        print('onDiscoveredServices:: ${ds.services.length}');
+      }
+    });
+    FlutterBluePlus.events.onCharacteristicReceived.listen((cr) async {
+      if (kDebugMode) {
+        print('onCharacteristicReceived:: ${cr.value.length}');
+      }
+      final str = await SaveUsStarmaxPlatform.instance.notify({
+        'value': Uint8List.fromList(cr.value),
+      });
+      if (str != null && str.isNotEmpty) {
+        final json = jsonDecode(str);
+
+        switch (json['type']) {
+          case 'Pair':
+            break;
+
+          case 'HealthDetail':
+            break;
+
+          case 'Power':
+            break;
+
+          case 'StepHistory':
+            return;
+
+          case 'BloodSugarHistory':
+            return;
+
+          case 'TempHistory':
+            return;
+
+          case 'MetHistory':
+            return;
+
+          case 'PressureHistory':
+            return;
+
+          case 'BloodOxygenHistory':
+            return;
+
+          case 'BloodPressureHistory':
+            return;
+
+          case 'HeartRateHistory':
+            return;
+
+          case 'SportHistory':
+            return;
+
+          case 'ValidHistoryDates':
+            return;
+
+          case 'GetHealthOpen':
+            return;
+
+          case 'GetState':
+            break;
+
+          case 'GetHeartRate':
+            break;
+
+          case 'Version':
+            return;
+
+          case 'SetUserInfo':
+            return;
+
+          case 'SetHeartRate':
+            return;
+
+          case 'SetState':
+            return;
+
+          case 'SetTime':
+            return;
+
+          case 'Reset':
+            return;
+
+          default:
+            if (kDebugMode) {
+              print('onCharacteristicReceived:: $json');
+            }
+            return;
+        }
+      }
+    });
+    FlutterBluePlus.events.onCharacteristicWritten.listen((cw) async {
+      if (kDebugMode) {
+        print('onCharacteristicWritten:: ${cw.characteristic}');
+      }
+    });
+    FlutterBluePlus.events.onDescriptorWritten.listen((dw) async {
+      if (dw.descriptor.descriptorUuid ==
+          Guid('00002902-0000-1000-8000-00805f9b34fb')) {
+        for (final s in dw.descriptor.device.servicesList
+            .where((e) => e.serviceUuid == Guid(_serviceUuid))) {
+          for (final c in s.characteristics.where(
+              (e) => Guid(_writeCharacteristicsUuid) == e.characteristicUuid)) {
+            try {
+              final value = await SaveUsStarmaxPlatform.instance.pairing();
+
+              if (value != null) {
+                await c.write(value);
+
+                return;
+              }
+            } catch (error) {
+              if (kDebugMode) {
+                print('pairing:: $error');
+              }
+            }
+          }
+        }
+      }
+    });
+    _startScan();
   }
 
   @override
@@ -52,12 +232,228 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Plugin example app'),
+          title: const Text('Plugin Starmax'),
         ),
-        body: Center(
-          child: Text('Running on: $_platformVersion\n'),
+        body: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              TextButton(
+                onPressed: () async {
+                  final starmaxArr = await _saveUsStarmaxPlugin.getVersion();
+
+                  setState(() => _starmaxMap['Version'] = starmaxArr);
+                },
+                child: RichText(
+                  text: TextSpan(
+                    text: 'Version',
+                    style: _textStyle(),
+                    children: [TextSpan(text: ' ${_starmaxMap['Version']}')],
+                  ),
+                ),
+              ),
+              TextButton(
+                onPressed: () async {
+                  final starmaxArr =
+                      await _saveUsStarmaxPlugin.getValidHistoryDates(
+                    /* HistoryType : kotlin.Enum<com.starmax.bluetoothsdk.data.HistoryType>
+                      Sport = 0,
+                      Step = 1,
+                      HeartRate = 2,
+                      BloodPressure = 3,
+                      BloodOxygen = 4,
+                      Pressure = 5,
+                      Met = 6,
+                      Temp = 7,
+                      Mai = 8,
+                      BloodSugar = 9
+                    */
+                    {'historyType': 2},
+                  );
+                  setState(() => _starmaxMap['ValidHistoryDates'] = starmaxArr);
+                },
+                child: RichText(
+                  text: TextSpan(
+                    text: 'ValidHistoryDates',
+                    style: _textStyle(),
+                    children: [
+                      TextSpan(text: ' ${_starmaxMap['ValidHistoryDates']}')
+                    ],
+                  ),
+                ),
+              ),
+              TextButton(
+                onPressed: () async {
+                  final starmaxArr = await _saveUsStarmaxPlugin.getState();
+
+                  setState(() => _starmaxMap['State'] = starmaxArr);
+                },
+                child: RichText(
+                  text: TextSpan(
+                    text: 'State',
+                    style: _textStyle(),
+                    children: [TextSpan(text: ' ${_starmaxMap['State']}')],
+                  ),
+                ),
+              )
+            ],
+          ),
         ),
       ),
     );
   }
+
+  _textStyle() {
+    return const TextStyle(color: Color(0xFF696969));
+  }
+
+  Future _request(BluetoothDevice device, Uint8List value) async {
+    for (final s in (await device.discoverServices())
+        .where((e) => e.serviceUuid == Guid(_serviceUuid))) {
+      for (final c in s.characteristics.where(
+          (e) => Guid(_writeCharacteristicsUuid) == e.characteristicUuid)) {
+        try {
+          await c.write(value);
+        } catch (error) {
+          if (kDebugMode) {
+            print('$value:: $error');
+          }
+        }
+      }
+    }
+  }
+
+  Future _startScan() async {
+    while (SaveUsStarmaxPlatform.instance.hashCode > 0) {
+      if (BluetoothConnectionState.disconnected == _connectionState) {
+        await FlutterBluePlus.startScan(
+          withMsd: [
+            MsdFilter(
+              24576,
+              data: [66, 75, 45, 66, 76, 69],
+            )
+          ],
+          timeout: const Duration(seconds: 7),
+        );
+      }
+      await Future.delayed(const Duration(seconds: 9));
+    }
+  }
+
+  Future _stopScan() async {
+    await FlutterBluePlus.stopScan();
+  }
+
+  Future _connect(BluetoothDevice device) async {
+    _streamConnectionState = device.connectionState.listen(
+      (BluetoothConnectionState state) async {
+        if (state == BluetoothConnectionState.disconnected) {
+          if (kDebugMode) {
+            print(
+              "${device.disconnectReason?.code} ${device.disconnectReason?.description}",
+            );
+          }
+        }
+        _connectionState = state;
+      },
+    );
+    device.cancelWhenDisconnected(
+      _streamConnectionState,
+      delayed: true,
+      next: true,
+    );
+    while (BluetoothConnectionState.disconnected == _connectionState) {
+      try {
+        await device.connect();
+
+        if (kDebugMode) {
+          print('Connected to the device successfully');
+        }
+        await _stopScan();
+      } catch (error) {
+        if (kDebugMode) {
+          print('Error occurred during connection: $error');
+        }
+        if (error is FlutterBluePlusException) {
+          switch (error.code) {
+            case 133:
+              if (kDebugMode) {
+                print('Retrying connection...');
+              }
+              break;
+
+            case 6:
+              if (kDebugMode) {
+                print('Device is disconnected.');
+              }
+              break;
+          }
+        } else {
+          if (kDebugMode) {
+            print('\x1B[31mconnecting: $error\x1B[0m');
+          }
+          rethrow;
+        }
+      } finally {
+        await Future.delayed(const Duration(milliseconds: 512));
+      }
+    }
+  }
+
+  Future requestPermissionForAndroid() async {
+    final androidInfo = await DeviceInfoPlugin().androidInfo;
+
+    if (kDebugMode) {
+      print('androidInfo:: $androidInfo');
+    }
+    switch (androidInfo.version.sdkInt) {
+      case > 30:
+        if (!await Permission.bluetoothScan.isGranted) {
+          final bluetoothScanGrant =
+              await Permission.bluetoothScan.request().isGranted;
+
+          if (kDebugMode) {
+            print('bluetoothScanGrant:: $bluetoothScanGrant');
+          }
+        }
+        if (!await Permission.bluetoothConnect.isGranted) {
+          final bluetoothConnectGrant =
+              await Permission.bluetoothConnect.request().isGranted;
+
+          if (kDebugMode) {
+            print('bluetoothConnectGrant:: $bluetoothConnectGrant');
+          }
+        }
+        break;
+
+      default:
+        if (!await Permission.bluetooth.isGranted) {
+          final bluetoothGrant = await Permission.bluetooth.request().isGranted;
+
+          if (kDebugMode) {
+            print('bluetoothGrant:: $bluetoothGrant');
+          }
+        }
+        if (!await Permission.location.isGranted) {
+          final locationGrant = await Permission.location.request().isGranted;
+
+          if (kDebugMode) {
+            print('locationGrant:: $locationGrant');
+          }
+        }
+        break;
+    }
+  }
+
+  BluetoothConnectionState _connectionState =
+      BluetoothConnectionState.disconnected;
+
+  late StreamSubscription<BluetoothConnectionState> _streamConnectionState;
+
+  final String _serviceUuid = dotenv.env['SERVICE']!;
+  final String _notifyCharacteristicUUID = dotenv.env['NOTIFYCHARACTERISTIC']!;
+  final String _writeCharacteristicsUuid = dotenv.env['WRITECHARACTERISTICS']!;
+
+  final Map<String, Uint8List?> _starmaxMap = {};
 }
