@@ -47,7 +47,6 @@ class _MyAppState extends State<MyApp> {
         if (kDebugMode) {
           print('onConnectionStateChanged:: ${cs.device.advName}');
         }
-        _connect(cs.device);
       }
       _connectionState = cs.connectionState;
     });
@@ -57,7 +56,9 @@ class _MyAppState extends State<MyApp> {
           if (kDebugMode) {
             print('scanResult:: ${result.device.advName}');
           }
-          _connect(result.device);
+          if (!_devices.any((e) => e.advName == result.device.advName)) {
+            setState(() => _devices.add(result.device));
+          }
         }
       }
       if (kDebugMode) {
@@ -120,6 +121,8 @@ class _MyAppState extends State<MyApp> {
       if (str != null && str.isNotEmpty) {
         final json = jsonDecode(str);
 
+        String title = json['type'];
+
         switch (json['type']) {
           case 'Pair':
             break;
@@ -131,37 +134,37 @@ class _MyAppState extends State<MyApp> {
             break;
 
           case 'StepHistory':
-            return;
+            break;
 
           case 'BloodSugarHistory':
-            return;
+            break;
 
           case 'TempHistory':
-            return;
+            break;
 
           case 'MetHistory':
-            return;
+            break;
 
           case 'PressureHistory':
-            return;
+            break;
 
           case 'BloodOxygenHistory':
-            return;
+            break;
 
           case 'BloodPressureHistory':
-            return;
+            break;
 
           case 'HeartRateHistory':
-            return;
+            break;
 
           case 'SportHistory':
-            return;
+            break;
 
           case 'ValidHistoryDates':
-            return;
+            break;
 
           case 'GetHealthOpen':
-            return;
+            break;
 
           case 'GetState':
             break;
@@ -170,28 +173,31 @@ class _MyAppState extends State<MyApp> {
             break;
 
           case 'Version':
-            return;
+            break;
 
           case 'SetUserInfo':
-            return;
+            break;
 
           case 'SetHeartRate':
-            return;
+            break;
 
           case 'SetState':
-            return;
+            break;
 
           case 'SetTime':
-            return;
+            break;
 
           case 'Reset':
-            return;
+            break;
 
           default:
             if (kDebugMode) {
               print('onCharacteristicReceived:: $json');
             }
             return;
+        }
+        if (kDebugMode) {
+          print('$title:: ${json['json']}');
         }
       }
     });
@@ -243,6 +249,9 @@ class _MyAppState extends State<MyApp> {
                 onPressed: () async {
                   final starmaxArr = await _saveUsStarmaxPlugin.getVersion();
 
+                  if (starmaxArr != null) {
+                    _request(_devices[_index], starmaxArr);
+                  }
                   setState(() => _starmaxMap['Version'] = starmaxArr);
                 },
                 child: RichText(
@@ -271,6 +280,9 @@ class _MyAppState extends State<MyApp> {
                     */
                     {'historyType': 2},
                   );
+                  if (starmaxArr != null) {
+                    _request(_devices[_index], starmaxArr);
+                  }
                   setState(() => _starmaxMap['ValidHistoryDates'] = starmaxArr);
                 },
                 child: RichText(
@@ -285,8 +297,37 @@ class _MyAppState extends State<MyApp> {
               ),
               TextButton(
                 onPressed: () async {
+                  final starmaxArr =
+                      await _saveUsStarmaxPlugin.getHeartRateHistory({
+                    'year': 2024,
+                    'month': 3 - 1,
+                    'date': 24,
+                    'hour': 0,
+                    'minute': 0,
+                    'second': 0,
+                  });
+                  if (starmaxArr != null) {
+                    _request(_devices[_index], starmaxArr);
+                  }
+                  setState(() => _starmaxMap['HeartRateHistory'] = starmaxArr);
+                },
+                child: RichText(
+                  text: TextSpan(
+                    text: 'HeartRateHistory',
+                    style: _textStyle(),
+                    children: [
+                      TextSpan(text: ' ${_starmaxMap['HeartRateHistory']}')
+                    ],
+                  ),
+                ),
+              ),
+              TextButton(
+                onPressed: () async {
                   final starmaxArr = await _saveUsStarmaxPlugin.getState();
 
+                  if (starmaxArr != null) {
+                    _request(_devices[_index], starmaxArr);
+                  }
                   setState(() => _starmaxMap['State'] = starmaxArr);
                 },
                 child: RichText(
@@ -295,6 +336,20 @@ class _MyAppState extends State<MyApp> {
                     style: _textStyle(),
                     children: [TextSpan(text: ' ${_starmaxMap['State']}')],
                   ),
+                ),
+              ),
+              Expanded(
+                child: ListView.builder(
+                  itemBuilder: (context, index) {
+                    return TextButton(
+                      onPressed: () async {
+                        await _connect(_devices[index]);
+                        _index = index;
+                      },
+                      child: Text(_devices[index].advName),
+                    );
+                  },
+                  itemCount: _devices.length,
                 ),
               )
             ],
@@ -446,6 +501,8 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
+  int _index = 0;
+
   BluetoothConnectionState _connectionState =
       BluetoothConnectionState.disconnected;
 
@@ -456,4 +513,5 @@ class _MyAppState extends State<MyApp> {
   final String _writeCharacteristicsUuid = dotenv.env['WRITECHARACTERISTICS']!;
 
   final Map<String, Uint8List?> _starmaxMap = {};
+  final List<BluetoothDevice> _devices = List.empty(growable: true);
 }
