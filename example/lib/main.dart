@@ -112,9 +112,6 @@ class _MyAppState extends State<MyApp> {
       }
     });
     FlutterBluePlus.events.onCharacteristicReceived.listen((cr) async {
-      if (kDebugMode) {
-        print('onCharacteristicReceived:: ${cr.value.length}');
-      }
       final str = await SaveUsStarmaxPlatform.instance.notify({
         'value': Uint8List.fromList(cr.value),
       });
@@ -278,7 +275,7 @@ class _MyAppState extends State<MyApp> {
                       Mai = 8,
                       BloodSugar = 9
                     */
-                    {'historyType': 2},
+                    {'historyType': 9},
                   );
                   if (starmaxArr != null) {
                     _request(_devices[_index], starmaxArr);
@@ -299,9 +296,9 @@ class _MyAppState extends State<MyApp> {
                 onPressed: () async {
                   final starmaxArr =
                       await _saveUsStarmaxPlugin.getHeartRateHistory({
-                    'year': 0,
-                    'month': 0,
-                    'date': 0,
+                    'year': 2024,
+                    'month': 3,
+                    'date': 21,
                     'hour': 0,
                     'minute': 0,
                     'second': 0,
@@ -317,6 +314,32 @@ class _MyAppState extends State<MyApp> {
                     style: _textStyle(),
                     children: [
                       TextSpan(text: ' ${_starmaxMap['HeartRateHistory']}')
+                    ],
+                  ),
+                ),
+              ),
+              TextButton(
+                onPressed: () async {
+                  final starmaxArr =
+                      await _saveUsStarmaxPlugin.getBloodSugarHistory({
+                    'year': 2024,
+                    'month': 2,
+                    'date': 21,
+                    'hour': 0,
+                    'minute': 0,
+                    'second': 0,
+                  });
+                  if (starmaxArr != null) {
+                    await _request(_devices[_index], starmaxArr);
+                  }
+                  setState(() => _starmaxMap['BloodSugarHistory'] = starmaxArr);
+                },
+                child: RichText(
+                  text: TextSpan(
+                    text: 'BloodSugarHistory',
+                    style: _textStyle(),
+                    children: [
+                      TextSpan(text: ' ${_starmaxMap['BloodSugarHistory']}')
                     ],
                   ),
                 ),
