@@ -20,8 +20,23 @@ class MethodChannelSaveUsStarmax extends SaveUsStarmaxPlatform {
   }
 
   @override
+  Future<Uint8List?> reset() async {
+    return await methodChannel.invokeMethod<Uint8List>('reset');
+  }
+
+  @override
+  Future<Uint8List?> setState(Map<String, dynamic> param) async {
+    return await methodChannel.invokeMethod<Uint8List>('setState', param);
+  }
+
+  @override
   Future<Uint8List?> setTime() async {
     return await methodChannel.invokeMethod('setTime');
+  }
+
+  @override
+  Future<Uint8List?> setUserInfo(Map<String, dynamic> param) async {
+    return await methodChannel.invokeMethod('setUserInfo', param);
   }
 
   @override
@@ -30,58 +45,68 @@ class MethodChannelSaveUsStarmax extends SaveUsStarmaxPlatform {
   }
 
   @override
+  Future<Uint8List?> setNotDisturb(Map<String, dynamic> param) async {
+    return await methodChannel.invokeMethod('setNotDisturb', param);
+  }
+
+  @override
+  Future<Uint8List?> getNotDisturb() async {
+    return await methodChannel.invokeMethod('getNotDisturb');
+  }
+
+  @override
   Future<Uint8List?> getSportHistory() async {
     return await methodChannel.invokeMethod('getSportHistory');
   }
 
   @override
-  Future<Uint8List?> getValidHistoryDates() async {
-    return await methodChannel.invokeMethod('getValidHistoryDates');
+  Future<Uint8List?> getValidHistoryDates(Map<String, dynamic> param) async {
+    return await methodChannel.invokeMethod('getValidHistoryDates', param);
   }
 
   @override
-  Future<Uint8List?> getStepHistory() async {
-    return await methodChannel.invokeMethod('getStepHistory');
+  Future<Uint8List?> getStepHistory(Map<String, dynamic> param) async {
+    return await methodChannel.invokeMethod('getStepHistory', param);
   }
 
   @override
-  Future<Uint8List?> getHeartRateHistory() async {
-    return await methodChannel.invokeMethod('getHeartRateHistory');
+  Future<Uint8List?> getHeartRateHistory(Map<String, dynamic> param) async {
+    return await methodChannel.invokeMethod('getHeartRateHistory', param);
   }
 
   @override
-  Future<Uint8List?> getBloodPressureHistory() async {
-    return await methodChannel.invokeMethod('getBloodPressureHistory');
+  Future<Uint8List?> getBloodPressureHistory(Map<String, dynamic> param) async {
+    return await methodChannel.invokeMethod('getBloodPressureHistory', param);
   }
 
   @override
-  Future<Uint8List?> getBloodOxygenHistory() async {
-    return await methodChannel.invokeMethod('getBloodOxygenHistory');
+  Future<Uint8List?> getBloodOxygenHistory(Map<String, dynamic> param) async {
+    return await methodChannel.invokeMethod('getBloodOxygenHistory', param);
   }
 
   @override
-  Future<Uint8List?> getPressureHistory() async {
-    return await methodChannel.invokeMethod('getPressureHistory');
+  Future<Uint8List?> getPressureHistory(Map<String, dynamic> param) async {
+    return await methodChannel.invokeMethod('getPressureHistory', param);
   }
 
   @override
-  Future<Uint8List?> getMetHistory() async {
-    return await methodChannel.invokeMethod('getMetHistory');
+  Future<Uint8List?> getMetHistory(Map<String, dynamic> param) async {
+    return await methodChannel.invokeMethod('getMetHistory', param);
   }
 
   @override
-  Future<Uint8List?> getTempHistory() async {
-    return await methodChannel.invokeMethod('getTempHistory');
+  Future<Uint8List?> getTempHistory(Map<String, dynamic> param) async {
+    return await methodChannel.invokeMethod('getTempHistory', param);
   }
 
   @override
-  Future<Uint8List?> getMaiHistory() async {
-    return await methodChannel.invokeMethod('getMaiHistory');
+  Future<Uint8List?> getMaiHistory(Map<String, dynamic> param) async {
+    return await methodChannel.invokeMethod('getMaiHistory', param);
   }
 
   @override
-  Future<Uint8List?> getBloodSugarHistory() async {
-    return await methodChannel.invokeMethod('getBloodSugarHistory');
+  Future<Uint8List?> getBloodSugarHistory(Map<String, dynamic> param) async {
+    return await methodChannel.invokeMethod('getBloodSugarHistory', param);
   }
 
   @override

@@ -23,7 +23,32 @@ class MockSaveUsStarmaxPlatform
   }
 
   @override
+  Future<Uint8List?> reset() {
+    return Future.value(Uint8List(16));
+  }
+
+  @override
+  Future<Uint8List?> setState(Map<String, dynamic> param) {
+    return Future.value(Uint8List(16));
+  }
+
+  @override
   Future<Uint8List?> setTime() {
+    return Future.value(Uint8List(16));
+  }
+
+  @override
+  Future<Uint8List?> setUserInfo(Map<String, dynamic> param) {
+    return Future.value(Uint8List(16));
+  }
+
+  @override
+  Future<Uint8List?> setNotDisturb(Map<String, dynamic> param) {
+    return Future.value(Uint8List(16));
+  }
+
+  @override
+  Future<Uint8List?> getNotDisturb() {
     return Future.value(Uint8List(16));
   }
 
@@ -63,37 +88,37 @@ class MockSaveUsStarmaxPlatform
   }
 
   @override
-  Future<Uint8List?> getBloodOxygenHistory() {
+  Future<Uint8List?> getBloodOxygenHistory(Map<String, dynamic> param) {
     return Future.value(Uint8List(16));
   }
 
   @override
-  Future<Uint8List?> getBloodPressureHistory() {
+  Future<Uint8List?> getBloodPressureHistory(Map<String, dynamic> param) {
     return Future.value(Uint8List(16));
   }
 
   @override
-  Future<Uint8List?> getBloodSugarHistory() {
+  Future<Uint8List?> getBloodSugarHistory(Map<String, dynamic> param) {
     return Future.value(Uint8List(16));
   }
 
   @override
-  Future<Uint8List?> getHeartRateHistory() {
+  Future<Uint8List?> getHeartRateHistory(Map<String, dynamic> param) {
     return Future.value(Uint8List(16));
   }
 
   @override
-  Future<Uint8List?> getMaiHistory() {
+  Future<Uint8List?> getMaiHistory(Map<String, dynamic> param) {
     return Future.value(Uint8List(16));
   }
 
   @override
-  Future<Uint8List?> getMetHistory() {
+  Future<Uint8List?> getMetHistory(Map<String, dynamic> param) {
     return Future.value(Uint8List(16));
   }
 
   @override
-  Future<Uint8List?> getPressureHistory() {
+  Future<Uint8List?> getPressureHistory(Map<String, dynamic> param) {
     return Future.value(Uint8List(16));
   }
 
@@ -103,17 +128,17 @@ class MockSaveUsStarmaxPlatform
   }
 
   @override
-  Future<Uint8List?> getStepHistory() {
+  Future<Uint8List?> getStepHistory(Map<String, dynamic> param) {
     return Future.value(Uint8List(16));
   }
 
   @override
-  Future<Uint8List?> getTempHistory() {
+  Future<Uint8List?> getTempHistory(Map<String, dynamic> param) {
     return Future.value(Uint8List(16));
   }
 
   @override
-  Future<Uint8List?> getValidHistoryDates() {
+  Future<Uint8List?> getValidHistoryDates(Map<String, dynamic> param) {
     return Future.value(Uint8List(16));
   }
 }
