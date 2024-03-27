@@ -36,6 +36,14 @@ class SaveUsStarmax {
     return SaveUsStarmaxPlatform.instance.setHeartRateControl(param);
   }
 
+  Future<Uint8List?> setNotDisturb(Map<String, dynamic> param) {
+    return SaveUsStarmaxPlatform.instance.setNotDisturb(param);
+  }
+
+  Future<Uint8List?> getNotDisturb() {
+    return SaveUsStarmaxPlatform.instance.getNotDisturb();
+  }
+
   Future<Uint8List?> getSportHistory() {
     return SaveUsStarmaxPlatform.instance.getSportHistory();
   }

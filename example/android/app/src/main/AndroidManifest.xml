@@ -19,7 +19,8 @@
                   android:required="false" />
     <application android:name="${applicationName}"
                  android:icon="@mipmap/ic_launcher"
-                 android:label="save_us_starmax_example">
+                 android:label="save_us_starmax_example"
+                 android:requestLegacyExternalStorage="true">
         <activity android:name=".MainActivity"
                   android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
                   android:exported="true"

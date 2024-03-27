@@ -150,6 +150,19 @@ class SaveUsStarmaxPlugin : FlutterPlugin, MethodCallHandler {
                 result.success(getValidHistoryDates(historyType))
             }
 
+            "getNotDisturb" -> result.success(getNotDisturb())
+
+            "setNotDisturb" -> result.success(
+                setNotDisturb(
+                    onOff = call.argument("onOff") ?: false,
+                    allDayOnOff = call.argument("allDayOnOff") ?: false,
+                    startHour = call.argument("startHour") ?: 0,
+                    startMinute = call.argument("startMinute") ?: 0,
+                    endHour = call.argument("endHour") ?: 0,
+                    endMinute = call.argument("endMinute") ?: 0,
+                )
+            )
+
             "setHeartRateControl" -> result.success(
                 setHeartRateControl(
                     startHour = call.argument("startHour") ?: 0,
@@ -296,6 +309,30 @@ class SaveUsStarmaxPlugin : FlutterPlugin, MethodCallHandler {
         val validHistory = StarmaxSend().getValidHistoryDates(historyType)
         Log.d(this.javaClass.simpleName, "getValidHistoryDates:: ${validHistory.contentToString()}")
         return validHistory
+    }
+
+    // 17.1.Get Do Not Disturb Mode
+    private fun getNotDisturb(): ByteArray {
+        return StarmaxSend().getNotDisturb()
+    }
+
+    // 17.2.Set Do Not Disturb Mode
+    private fun setNotDisturb(
+        onOff: Boolean,
+        allDayOnOff: Boolean,
+        startHour: Int,
+        startMinute: Int,
+        endHour: Int,
+        endMinute: Int
+    ): ByteArray {
+        return StarmaxSend().setNotDisturb(
+            onOff = onOff,
+            allDayOnOff = allDayOnOff,
+            startHour = startHour,
+            startMinute = startMinute,
+            endHour = endHour,
+            endMinute = endMinute,
+        )
     }
 
     // 14.2.Set Heart Rate Detection Interval and Range

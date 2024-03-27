@@ -187,6 +187,12 @@ class _MyAppState extends State<MyApp> {
           case 'Reset':
             break;
 
+          case 'GetNotDisturb':
+            break;
+
+          case 'SetNotDisturb':
+            break;
+
           default:
             if (kDebugMode) {
               print('onCharacteristicReceived:: $json');
@@ -358,6 +364,50 @@ class _MyAppState extends State<MyApp> {
                     text: 'State',
                     style: _textStyle(),
                     children: [TextSpan(text: ' ${_starmaxMap['State']}')],
+                  ),
+                ),
+              ),
+              TextButton(
+                onPressed: () async {
+                  final starmaxArr = await _saveUsStarmaxPlugin.getNotDisturb();
+
+                  if (starmaxArr != null) {
+                    _request(_devices[_index], starmaxArr);
+                  }
+                  setState(() => _starmaxMap['getNotDisturb'] = starmaxArr);
+                },
+                child: RichText(
+                  text: TextSpan(
+                    text: 'getNotDisturb',
+                    style: _textStyle(),
+                    children: [
+                      TextSpan(text: ' ${_starmaxMap['getNotDisturb']}')
+                    ],
+                  ),
+                ),
+              ),
+              TextButton(
+                onPressed: () async {
+                  final starmaxArr = await _saveUsStarmaxPlugin.setNotDisturb({
+                    'onOff': false,
+                    'allDayOnOff': false,
+                    'startHour': 0,
+                    'startMinute': 0,
+                    'endHour': 23,
+                    'endMinute': 59
+                  });
+                  if (starmaxArr != null) {
+                    _request(_devices[_index], starmaxArr);
+                  }
+                  setState(() => _starmaxMap['setNotDisturb'] = starmaxArr);
+                },
+                child: RichText(
+                  text: TextSpan(
+                    text: 'setNotDisturb',
+                    style: _textStyle(),
+                    children: [
+                      TextSpan(text: ' ${_starmaxMap['setNotDisturb']}')
+                    ],
                   ),
                 ),
               ),
