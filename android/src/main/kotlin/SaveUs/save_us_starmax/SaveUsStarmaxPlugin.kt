@@ -401,7 +401,7 @@ class SaveUsStarmaxPlugin : FlutterPlugin, MethodCallHandler {
     private fun notify(value: ByteArray?): String {
         if (value != null) {
             try {
-                val response = MapStarmaxNotify().notify(value)
+                val response = starmaxNotify.notify(value)
 
                 Log.d(
                     this.javaClass.simpleName,
@@ -420,4 +420,6 @@ class SaveUsStarmaxPlugin : FlutterPlugin, MethodCallHandler {
         }
         return ""
     }
+
+    private val starmaxNotify = MapStarmaxNotify()
 }
