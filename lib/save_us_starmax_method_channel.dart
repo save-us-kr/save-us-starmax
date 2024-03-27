@@ -45,6 +45,16 @@ class MethodChannelSaveUsStarmax extends SaveUsStarmaxPlatform {
   }
 
   @override
+  Future<Uint8List?> setNotDisturb(Map<String, dynamic> param) async {
+    return await methodChannel.invokeMethod('setNotDisturb', param);
+  }
+
+  @override
+  Future<Uint8List?> getNotDisturb() async {
+    return await methodChannel.invokeMethod('getNotDisturb');
+  }
+
+  @override
   Future<Uint8List?> getSportHistory() async {
     return await methodChannel.invokeMethod('getSportHistory');
   }

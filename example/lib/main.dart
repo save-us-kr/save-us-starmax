@@ -112,9 +112,6 @@ class _MyAppState extends State<MyApp> {
       }
     });
     FlutterBluePlus.events.onCharacteristicReceived.listen((cr) async {
-      if (kDebugMode) {
-        print('onCharacteristicReceived:: ${cr.value.length}');
-      }
       final str = await SaveUsStarmaxPlatform.instance.notify({
         'value': Uint8List.fromList(cr.value),
       });
@@ -188,6 +185,12 @@ class _MyAppState extends State<MyApp> {
             break;
 
           case 'Reset':
+            break;
+
+          case 'GetNotDisturb':
+            break;
+
+          case 'SetNotDisturb':
             break;
 
           default:
@@ -278,7 +281,7 @@ class _MyAppState extends State<MyApp> {
                       Mai = 8,
                       BloodSugar = 9
                     */
-                    {'historyType': 2},
+                    {'historyType': 9},
                   );
                   if (starmaxArr != null) {
                     _request(_devices[_index], starmaxArr);
@@ -299,9 +302,9 @@ class _MyAppState extends State<MyApp> {
                 onPressed: () async {
                   final starmaxArr =
                       await _saveUsStarmaxPlugin.getHeartRateHistory({
-                    'year': 0,
-                    'month': 0,
-                    'date': 0,
+                    'year': 2024,
+                    'month': 3,
+                    'date': 21,
                     'hour': 0,
                     'minute': 0,
                     'second': 0,
@@ -323,6 +326,32 @@ class _MyAppState extends State<MyApp> {
               ),
               TextButton(
                 onPressed: () async {
+                  final starmaxArr =
+                      await _saveUsStarmaxPlugin.getBloodSugarHistory({
+                    'year': 2024,
+                    'month': 2,
+                    'date': 21,
+                    'hour': 0,
+                    'minute': 0,
+                    'second': 0,
+                  });
+                  if (starmaxArr != null) {
+                    await _request(_devices[_index], starmaxArr);
+                  }
+                  setState(() => _starmaxMap['BloodSugarHistory'] = starmaxArr);
+                },
+                child: RichText(
+                  text: TextSpan(
+                    text: 'BloodSugarHistory',
+                    style: _textStyle(),
+                    children: [
+                      TextSpan(text: ' ${_starmaxMap['BloodSugarHistory']}')
+                    ],
+                  ),
+                ),
+              ),
+              TextButton(
+                onPressed: () async {
                   final starmaxArr = await _saveUsStarmaxPlugin.getState();
 
                   if (starmaxArr != null) {
@@ -335,6 +364,50 @@ class _MyAppState extends State<MyApp> {
                     text: 'State',
                     style: _textStyle(),
                     children: [TextSpan(text: ' ${_starmaxMap['State']}')],
+                  ),
+                ),
+              ),
+              TextButton(
+                onPressed: () async {
+                  final starmaxArr = await _saveUsStarmaxPlugin.getNotDisturb();
+
+                  if (starmaxArr != null) {
+                    _request(_devices[_index], starmaxArr);
+                  }
+                  setState(() => _starmaxMap['getNotDisturb'] = starmaxArr);
+                },
+                child: RichText(
+                  text: TextSpan(
+                    text: 'getNotDisturb',
+                    style: _textStyle(),
+                    children: [
+                      TextSpan(text: ' ${_starmaxMap['getNotDisturb']}')
+                    ],
+                  ),
+                ),
+              ),
+              TextButton(
+                onPressed: () async {
+                  final starmaxArr = await _saveUsStarmaxPlugin.setNotDisturb({
+                    'onOff': false,
+                    'allDayOnOff': false,
+                    'startHour': 0,
+                    'startMinute': 0,
+                    'endHour': 23,
+                    'endMinute': 59
+                  });
+                  if (starmaxArr != null) {
+                    _request(_devices[_index], starmaxArr);
+                  }
+                  setState(() => _starmaxMap['setNotDisturb'] = starmaxArr);
+                },
+                child: RichText(
+                  text: TextSpan(
+                    text: 'setNotDisturb',
+                    style: _textStyle(),
+                    children: [
+                      TextSpan(text: ' ${_starmaxMap['setNotDisturb']}')
+                    ],
                   ),
                 ),
               ),

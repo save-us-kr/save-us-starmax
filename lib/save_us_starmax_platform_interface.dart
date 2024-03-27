@@ -58,6 +58,14 @@ abstract class SaveUsStarmaxPlatform extends PlatformInterface {
     throw UnimplementedError();
   }
 
+  Future<Uint8List?> setNotDisturb(Map<String, dynamic> param) {
+    throw UnimplementedError();
+  }
+
+  Future<Uint8List?> getNotDisturb() {
+    throw UnimplementedError();
+  }
+
   Future<Uint8List?> getSportHistory() {
     throw UnimplementedError();
   }

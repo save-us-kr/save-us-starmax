@@ -13,12 +13,7 @@ import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
 import java.util.Calendar
 
-/** SaveUsStarmaxPlugin */
 class SaveUsStarmaxPlugin : FlutterPlugin, MethodCallHandler {
-    /// The MethodChannel that will the communication between Flutter and native Android
-    ///
-    /// This local reference serves to register the plugin with the Flutter Engine and unregister it
-    /// when the Flutter Engine is detached from the Activity
     private lateinit var channel: MethodChannel
 
     override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
@@ -29,13 +24,13 @@ class SaveUsStarmaxPlugin : FlutterPlugin, MethodCallHandler {
     override fun onMethodCall(call: MethodCall, result: Result) {
         when (call.method) {
             "notify" -> result.success(notify(call.argument("value")))
+
             "getHealthData" -> result.success(getHealthDetail())
             "getPower" -> result.success(getPower())
             "getState" -> result.success(getState())
             "getVersion" -> result.success(getVersion())
             "getHealthOpen" -> result.success(getHealthOpen())
             "getHeartRateControl" -> result.success(getHeartRateControl())
-
             "getSportHistory" -> result.success(getSportHistory())
 
             "getStepHistory" -> {
@@ -49,11 +44,7 @@ class SaveUsStarmaxPlugin : FlutterPlugin, MethodCallHandler {
                     call.argument("minute") ?: 0,
                     call.argument("second") ?: 0,
                 )
-                return result.success(
-                    getStepHistory(
-                        calendar
-                    )
-                )
+                return result.success(getStepHistory(calendar))
             }
 
             "getHeartRateHistory" -> {
@@ -67,11 +58,7 @@ class SaveUsStarmaxPlugin : FlutterPlugin, MethodCallHandler {
                     call.argument("minute") ?: 0,
                     call.argument("second") ?: 0,
                 )
-                return result.success(
-                    getHeartRateHistory(
-                        calendar
-                    )
-                )
+                return result.success(getHeartRateHistory(calendar))
             }
 
             "getBloodPressureHistory" -> {
@@ -85,11 +72,7 @@ class SaveUsStarmaxPlugin : FlutterPlugin, MethodCallHandler {
                     call.argument("minute") ?: 0,
                     call.argument("second") ?: 0,
                 )
-                return result.success(
-                    getBloodPressureHistory(
-                        calendar
-                    )
-                )
+                return result.success(getBloodPressureHistory(calendar))
             }
 
             "getBloodOxygenHistory" -> {
@@ -103,11 +86,7 @@ class SaveUsStarmaxPlugin : FlutterPlugin, MethodCallHandler {
                     call.argument("minute") ?: 0,
                     call.argument("second") ?: 0,
                 )
-                return result.success(
-                    getBloodOxygenHistory(
-                        calendar
-                    )
-                )
+                return result.success(getBloodOxygenHistory(calendar))
             }
 
             "getPressureHistory" -> {
@@ -121,11 +100,7 @@ class SaveUsStarmaxPlugin : FlutterPlugin, MethodCallHandler {
                     call.argument("minute") ?: 0,
                     call.argument("second") ?: 0,
                 )
-                return result.success(
-                    getPressureHistory(
-                        calendar
-                    )
-                )
+                return result.success(getPressureHistory(calendar))
             }
 
             "getMetHistory" -> {
@@ -139,11 +114,7 @@ class SaveUsStarmaxPlugin : FlutterPlugin, MethodCallHandler {
                     call.argument("minute") ?: 0,
                     call.argument("second") ?: 0,
                 )
-                return result.success(
-                    getMetHistory(
-                        calendar
-                    )
-                )
+                return result.success(getMetHistory(calendar))
             }
 
             "getTempHistory" -> {
@@ -157,11 +128,7 @@ class SaveUsStarmaxPlugin : FlutterPlugin, MethodCallHandler {
                     call.argument("minute") ?: 0,
                     call.argument("second") ?: 0,
                 )
-                return result.success(
-                    getTempHistory(
-                        calendar
-                    )
-                )
+                return result.success(getTempHistory(calendar))
             }
 
             "getBloodSugarHistory" -> {
@@ -175,17 +142,26 @@ class SaveUsStarmaxPlugin : FlutterPlugin, MethodCallHandler {
                     call.argument("minute") ?: 0,
                     call.argument("second") ?: 0,
                 )
-                return result.success(
-                    getBloodSugarHistory(
-                        calendar
-                    )
-                )
+                return result.success(getBloodSugarHistory(calendar))
             }
 
             "getValidHistoryDates" -> {
                 val historyType: HistoryType = getHistoryType(call.argument("historyType") ?: 0)
                 result.success(getValidHistoryDates(historyType))
             }
+
+            "getNotDisturb" -> result.success(getNotDisturb())
+
+            "setNotDisturb" -> result.success(
+                setNotDisturb(
+                    onOff = call.argument("onOff") ?: false,
+                    allDayOnOff = call.argument("allDayOnOff") ?: false,
+                    startHour = call.argument("startHour") ?: 0,
+                    startMinute = call.argument("startMinute") ?: 0,
+                    endHour = call.argument("endHour") ?: 0,
+                    endMinute = call.argument("endMinute") ?: 0,
+                )
+            )
 
             "setHeartRateControl" -> result.success(
                 setHeartRateControl(
@@ -222,7 +198,9 @@ class SaveUsStarmaxPlugin : FlutterPlugin, MethodCallHandler {
             "setTime" -> result.success(setTime())
             "reset" -> result.success(reset())
             "pair" -> result.success(pair())
+
             "getPlatformVersion" -> result.success("Android ${android.os.Build.VERSION.RELEASE}")
+
             else -> result.notImplemented()
         }
         Log.d(this.javaClass.simpleName, "callMethod:: ${call.method}")
@@ -286,71 +264,75 @@ class SaveUsStarmaxPlugin : FlutterPlugin, MethodCallHandler {
 
     // 26.Synchronize Data of Steps/Sleep
     private fun getStepHistory(calendar: Calendar): ByteArray {
-        Log.d(
-            this.javaClass.simpleName, "getStepHistory:: $calendar"
-        )
         return StarmaxSend().getStepHistory(calendar)
     }
 
     // 27.Synchronize Heart Rate Data
     private fun getHeartRateHistory(calendar: Calendar): ByteArray {
-        Log.d(
-            this.javaClass.simpleName, "getHeartRateHistory:: $calendar"
-        )
         return StarmaxSend().getHeartRateHistory(calendar)
     }
 
     // 28.Synchronize Blood Pressure Data
     private fun getBloodPressureHistory(calendar: Calendar): ByteArray {
-        Log.d(
-            this.javaClass.simpleName, "getBloodPressureHistory:: $calendar"
-        )
         return StarmaxSend().getBloodPressureHistory(calendar)
     }
 
     // 29.Synchronize Blood Oxygen Data
     private fun getBloodOxygenHistory(calendar: Calendar): ByteArray {
-        Log.d(
-            this.javaClass.simpleName, "getBloodOxygenHistory:: $calendar"
-        )
         return StarmaxSend().getBloodOxygenHistory(calendar)
     }
 
     // 30.Synchronize Stress Data
     private fun getPressureHistory(calendar: Calendar): ByteArray {
-        Log.d(
-            this.javaClass.simpleName, "getPressureHistory:: $calendar"
-        )
         return StarmaxSend().getPressureHistory(calendar)
     }
 
     // 31.Synchronize MET Data
     private fun getMetHistory(calendar: Calendar): ByteArray {
-        Log.d(
-            this.javaClass.simpleName, "getMetHistory:: $calendar"
-        )
         return StarmaxSend().getMetHistory(calendar)
     }
 
     // 32.Synchronize Temperature Data
     private fun getTempHistory(calendar: Calendar): ByteArray {
-        Log.d(
-            this.javaClass.simpleName, "getTempHistory:: $calendar"
-        )
         return StarmaxSend().getTempHistory(calendar)
     }
 
     // 35.Synchronize Blood Glucose Date
     private fun getBloodSugarHistory(calendar: Calendar): ByteArray {
-        Log.d(
-            this.javaClass.simpleName, "getBloodSugarHistory:: $calendar"
-        )
-        return StarmaxSend().getBloodSugarHistory(calendar)
+        val bloodSugar = StarmaxSend().getBloodSugarHistory(calendar)
+        Log.d(this.javaClass.simpleName, "getBloodSugarHistory:: ${bloodSugar.contentToString()}")
+        return bloodSugar
     }
 
     // 34.Synchronize Valid Date of Historical Data
     private fun getValidHistoryDates(historyType: HistoryType): ByteArray {
-        return StarmaxSend().getValidHistoryDates(historyType)
+        val validHistory = StarmaxSend().getValidHistoryDates(historyType)
+        Log.d(this.javaClass.simpleName, "getValidHistoryDates:: ${validHistory.contentToString()}")
+        return validHistory
+    }
+
+    // 17.1.Get Do Not Disturb Mode
+    private fun getNotDisturb(): ByteArray {
+        return StarmaxSend().getNotDisturb()
+    }
+
+    // 17.2.Set Do Not Disturb Mode
+    private fun setNotDisturb(
+        onOff: Boolean,
+        allDayOnOff: Boolean,
+        startHour: Int,
+        startMinute: Int,
+        endHour: Int,
+        endMinute: Int
+    ): ByteArray {
+        return StarmaxSend().setNotDisturb(
+            onOff = onOff,
+            allDayOnOff = allDayOnOff,
+            startHour = startHour,
+            startMinute = startMinute,
+            endHour = endHour,
+            endMinute = endMinute,
+        )
     }
 
     // 14.2.Set Heart Rate Detection Interval and Range
@@ -421,13 +403,16 @@ class SaveUsStarmaxPlugin : FlutterPlugin, MethodCallHandler {
             try {
                 val response = MapStarmaxNotify().notify(value)
 
+                Log.d(
+                    this.javaClass.simpleName,
+                    "${response.type}:: ${value.size} ${value.contentToString()}"
+                )
                 if (response.type == NotifyType.CrcFailure) {
                     Log.d(this.javaClass.simpleName, "onCharacteristicChanged :: crc failure")
                 }
                 if (response.type == NotifyType.Failure) {
                     Log.d(this.javaClass.simpleName, "onCharacteristicChanged :: failure")
                 }
-                Log.d(this.javaClass.simpleName, "${response.type} :: ${response.toJson()}")
                 return response.toJson()
             } catch (e: Exception) {
                 return e.message ?: ""

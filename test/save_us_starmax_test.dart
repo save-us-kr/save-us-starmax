@@ -43,6 +43,16 @@ class MockSaveUsStarmaxPlatform
   }
 
   @override
+  Future<Uint8List?> setNotDisturb(Map<String, dynamic> param) {
+    return Future.value(Uint8List(16));
+  }
+
+  @override
+  Future<Uint8List?> getNotDisturb() {
+    return Future.value(Uint8List(16));
+  }
+
+  @override
   Future<Uint8List?> getState() {
     return Future.value(Uint8List(16));
   }
