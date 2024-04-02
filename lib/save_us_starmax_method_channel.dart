@@ -50,6 +50,26 @@ class MethodChannelSaveUsStarmax extends SaveUsStarmaxPlatform {
   }
 
   @override
+  Future<Uint8List?> setLongSit(Map<String, dynamic> param) async {
+    return await methodChannel.invokeMethod('setLongSit', param);
+  }
+
+  @override
+  Future<Uint8List?> setDrinkWater(Map<String, dynamic> param) async {
+    return await methodChannel.invokeMethod('setDrinkWater', param);
+  }
+
+  @override
+  Future<Uint8List?> getDrinkWater() async {
+    return await methodChannel.invokeMethod('getDrinkWater');
+  }
+
+  @override
+  Future<Uint8List?> getLongSit() async {
+    return await methodChannel.invokeMethod('getLongSit');
+  }
+
+  @override
   Future<Uint8List?> getNotDisturb() async {
     return await methodChannel.invokeMethod('getNotDisturb');
   }

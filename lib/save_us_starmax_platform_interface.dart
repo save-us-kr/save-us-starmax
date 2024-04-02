@@ -62,6 +62,22 @@ abstract class SaveUsStarmaxPlatform extends PlatformInterface {
     throw UnimplementedError();
   }
 
+  Future<Uint8List?> setLongSit(Map<String, dynamic> param) {
+    throw UnimplementedError();
+  }
+
+  Future<Uint8List?> setDrinkWater(Map<String, dynamic> param) {
+    throw UnimplementedError();
+  }
+
+  Future<Uint8List?> getDrinkWater() {
+    throw UnimplementedError();
+  }
+
+  Future<Uint8List?> getLongSit() {
+    throw UnimplementedError();
+  }
+
   Future<Uint8List?> getNotDisturb() {
     throw UnimplementedError();
   }
