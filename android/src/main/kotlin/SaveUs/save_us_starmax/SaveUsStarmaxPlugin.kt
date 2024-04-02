@@ -151,6 +151,30 @@ class SaveUsStarmaxPlugin : FlutterPlugin, MethodCallHandler {
             }
 
             "getNotDisturb" -> result.success(getNotDisturb())
+            "getLongSit" -> result.success(getLongSit())
+            "getDrinkWater" -> result.success(getDrinkWater())
+
+            "setLongSit" -> result.success(
+                setLongSit(
+                    onOff = call.argument("onOff") ?: false,
+                    startHour = call.argument("startHour") ?: 0,
+                    startMinute = call.argument("startMinute") ?: 0,
+                    endHour = call.argument("endHour") ?: 23,
+                    endMinute = call.argument("endMinute") ?: 59,
+                    interval = call.argument("interval") ?: 60
+                )
+            )
+
+            "setDrinkWater" -> result.success(
+                setDrinkWater(
+                    onOff = call.argument("onOff") ?: false,
+                    startHour = call.argument("startHour") ?: 0,
+                    startMinute = call.argument("startMinute") ?: 0,
+                    endHour = call.argument("endHour") ?: 23,
+                    endMinute = call.argument("endMinute") ?: 59,
+                    interval = call.argument("interval") ?: 60
+                )
+            )
 
             "setNotDisturb" -> result.success(
                 setNotDisturb(
@@ -314,6 +338,54 @@ class SaveUsStarmaxPlugin : FlutterPlugin, MethodCallHandler {
     // 17.1.Get Do Not Disturb Mode
     private fun getNotDisturb(): ByteArray {
         return StarmaxSend().getNotDisturb()
+    }
+
+    // 19.1.Get Sedentary Reminder
+    private fun getLongSit(): ByteArray {
+        return StarmaxSend().getLongSit()
+    }
+
+    // 20.1.Get Drink Water Reminder
+    private fun getDrinkWater(): ByteArray {
+        return StarmaxSend().getDrinkWater()
+    }
+
+    // 19.2.Set Sedentary Reminder
+    private fun setLongSit(
+        onOff: Boolean,
+        startHour: Int,
+        startMinute: Int,
+        endHour: Int,
+        endMinute: Int,
+        interval: Int
+    ): ByteArray {
+        return StarmaxSend().setLongSit(
+            onOff = onOff,
+            startHour = startHour,
+            startMinute = startMinute,
+            endHour = endHour,
+            endMinute = endMinute,
+            interval = interval
+        )
+    }
+
+    // 20.2.Set Drink Water Reminder
+    private fun setDrinkWater(
+        onOff: Boolean,
+        startHour: Int,
+        startMinute: Int,
+        endHour: Int,
+        endMinute: Int,
+        interval: Int
+    ): ByteArray {
+        return StarmaxSend().setDrinkWater(
+            onOff = onOff,
+            startHour = startHour,
+            startMinute = startMinute,
+            endHour = endHour,
+            endMinute = endMinute,
+            interval = interval
+        )
     }
 
     // 17.2.Set Do Not Disturb Mode

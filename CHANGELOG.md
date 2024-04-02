@@ -1,3 +1,5 @@
+## 1.0.5
+Add Reminder function
 ## 1.0.4
 Implemented to retrieve history data
 ## 1.0.3
