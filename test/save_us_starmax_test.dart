@@ -48,6 +48,26 @@ class MockSaveUsStarmaxPlatform
   }
 
   @override
+  Future<Uint8List?> setLongSit(Map<String, dynamic> param) {
+    return Future.value(Uint8List(16));
+  }
+
+  @override
+  Future<Uint8List?> setDrinkWater(Map<String, dynamic> param) {
+    return Future.value(Uint8List(16));
+  }
+
+  @override
+  Future<Uint8List?> getDrinkWater() {
+    return Future.value(Uint8List(16));
+  }
+
+  @override
+  Future<Uint8List?> getLongSit() {
+    return Future.value(Uint8List(16));
+  }
+
+  @override
   Future<Uint8List?> getNotDisturb() {
     return Future.value(Uint8List(16));
   }

@@ -40,6 +40,22 @@ class SaveUsStarmax {
     return SaveUsStarmaxPlatform.instance.setNotDisturb(param);
   }
 
+  Future<Uint8List?> setLongSit(Map<String, dynamic> param) {
+    return SaveUsStarmaxPlatform.instance.setLongSit(param);
+  }
+
+  Future<Uint8List?> setDrinkWater(Map<String, dynamic> param) {
+    return SaveUsStarmaxPlatform.instance.setDrinkWater(param);
+  }
+
+  Future<Uint8List?> getDrinkWater() {
+    return SaveUsStarmaxPlatform.instance.getDrinkWater();
+  }
+
+  Future<Uint8List?> getLongSit() {
+    return SaveUsStarmaxPlatform.instance.getLongSit();
+  }
+
   Future<Uint8List?> getNotDisturb() {
     return SaveUsStarmaxPlatform.instance.getNotDisturb();
   }

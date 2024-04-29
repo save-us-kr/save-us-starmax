@@ -330,7 +330,7 @@ class _MyAppState extends State<MyApp> {
                       await _saveUsStarmaxPlugin.getBloodSugarHistory({
                     'year': 2024,
                     'month': 2,
-                    'date': 21,
+                    'date': 27,
                     'hour': 0,
                     'minute': 0,
                     'second': 0,
