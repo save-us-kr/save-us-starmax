@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -17,17 +19,36 @@ Future main() async {
   await dotenv.load(
     fileName: '.env',
   );
+
   runApp(MyApp(
     prefs: await SharedPreferences.getInstance(),
   ));
+
+
 }
+
+Future<void> requestPermissions() async {
+  if (Platform.isIOS) {
+    await [
+      Permission.bluetooth,
+      Permission.locationWhenInUse,
+    ].request();
+  } else if (Platform.isAndroid) {
+    await [
+      Permission.bluetooth,
+      Permission.location,
+    ].request();
+  }
+}
+
+
 
 class MyApp extends StatefulWidget {
   const MyApp({
     super.key,
-    required this.prefs,
+    this.prefs,
   });
-  final SharedPreferences prefs;
+  final SharedPreferences? prefs;
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -35,11 +56,12 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final _saveUsStarmaxPlugin = SaveUsStarmax();
+  static const platform = MethodChannel('save_us_starmax');
 
   @override
   void initState() {
     super.initState();
-    requestPermissionForAndroid();
+    // requestPermissionForAndroid();
     FlutterBluePlus.events.onConnectionStateChanged.listen((cs) {
       final status = cs.connectionState == BluetoothConnectionState.connected;
 
@@ -49,12 +71,17 @@ class _MyAppState extends State<MyApp> {
         }
       }
       _connectionState = cs.connectionState;
+
+      if (_connectionState == BluetoothConnectionState.connected) {
+        _sendDeviceInfoToNative(cs.device);
+      }
     });
+
     FlutterBluePlus.scanResults.listen((results) {
       for (final result in results) {
         if (BluetoothConnectionState.disconnected == _connectionState) {
           if (kDebugMode) {
-            print('scanResult:: ${result.device.advName}');
+            // print('scanResult:: ${result.device.advName}');
           }
           if (!_devices.any((e) => e.advName == result.device.advName)) {
             setState(() => _devices.add(result.device));
@@ -62,25 +89,31 @@ class _MyAppState extends State<MyApp> {
         }
       }
       if (kDebugMode) {
-        print('scanResults:: ${results.length}');
+        // print('scanResults:: ${results.length}');
       }
     });
+
     FlutterBluePlus.isScanning.listen(
-      (state) {
+          (state) {
         if (kDebugMode) {
           print('isScanning:: $state');
         }
       },
     );
 
+    // 페어링 하고 난 후 여기로 옴.
     FlutterBluePlus.events.onMtuChanged.listen((mtu) async {
+      print("Flutter onMtuChanged" + mtu.toString());
       for (final s in (await mtu.device.discoverServices())
           .where((e) => e.serviceUuid == Guid(_serviceUuid))) {
         for (final c in s.characteristics.where(
-            (e) => e.characteristicUuid == Guid(_notifyCharacteristicUUID))) {
+                (e) => e.characteristicUuid == Guid(_notifyCharacteristicUUID))) {
           for (final d in c.descriptors) {
             try {
-              await d.write([1, 0]);
+              // Ios 에서는 주석을 해야 됨
+              if(Platform.isAndroid){
+                await d.write([1, 0]);
+              }
             } catch (error) {
               if (error is FlutterBluePlusException) {
                 switch (error.code) {
@@ -106,15 +139,21 @@ class _MyAppState extends State<MyApp> {
         }
       }
     });
+
     FlutterBluePlus.events.onDiscoveredServices.listen((ds) async {
       if (kDebugMode) {
         print('onDiscoveredServices:: ${ds.services.length}');
       }
     });
+
+    // 여기서 받아서 파싱 시작.
     FlutterBluePlus.events.onCharacteristicReceived.listen((cr) async {
-      final str = await SaveUsStarmaxPlatform.instance.notify({
+      print("Notify 접근");
+      final str = await _saveUsStarmaxPlugin.notify({
         'value': Uint8List.fromList(cr.value),
       });
+
+
       if (str != null && str.isNotEmpty) {
         final json = jsonDecode(str);
 
@@ -196,6 +235,7 @@ class _MyAppState extends State<MyApp> {
           default:
             if (kDebugMode) {
               print('onCharacteristicReceived:: $json');
+
             }
             return;
         }
@@ -204,18 +244,20 @@ class _MyAppState extends State<MyApp> {
         }
       }
     });
+
     FlutterBluePlus.events.onCharacteristicWritten.listen((cw) async {
       if (kDebugMode) {
         print('onCharacteristicWritten:: ${cw.characteristic}');
       }
     });
+
     FlutterBluePlus.events.onDescriptorWritten.listen((dw) async {
       if (dw.descriptor.descriptorUuid ==
           Guid('00002902-0000-1000-8000-00805f9b34fb')) {
         for (final s in dw.descriptor.device.servicesList
             .where((e) => e.serviceUuid == Guid(_serviceUuid))) {
           for (final c in s.characteristics.where(
-              (e) => Guid(_writeCharacteristicsUuid) == e.characteristicUuid)) {
+                  (e) => Guid(_writeCharacteristicsUuid) == e.characteristicUuid)) {
             try {
               final value = await SaveUsStarmaxPlatform.instance.pairing();
 
@@ -236,6 +278,19 @@ class _MyAppState extends State<MyApp> {
     _startScan();
   }
 
+  Future<void> _sendDeviceInfoToNative(BluetoothDevice device) async {
+    try {
+      await platform.invokeMethod('deviceConnected', {
+        'deviceId': device.id.id,
+        'deviceName': device.name,
+      });
+    } on PlatformException catch (e) {
+      if (kDebugMode) {
+        print("Failed to send device info: '${e.message}'.");
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -248,6 +303,8 @@ class _MyAppState extends State<MyApp> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+
+
               TextButton(
                 onPressed: () async {
                   final starmaxArr = await _saveUsStarmaxPlugin.getVersion();
@@ -265,10 +322,414 @@ class _MyAppState extends State<MyApp> {
                   ),
                 ),
               ),
+
+/*              TextButton(
+                onPressed: () async {
+                  final healthData = await _saveUsStarmaxPlugin.getHealthData();
+                  if (healthData != null) {
+                    _request(_devices[_index], healthData);
+                  }
+                  setState(() => _starmaxMap['HealthData'] = healthData);
+                },
+                child: RichText(
+                  text: TextSpan(
+                    text: 'HealthData',
+                    style: _textStyle(),
+                    children: [TextSpan(text: ' ${_starmaxMap['HealthData']}')],
+                  ),
+                ),
+              ),*/
+
+/*              TextButton(
+                onPressed: () async {
+                  final powerData = await _saveUsStarmaxPlugin.getPower();
+                  if (powerData != null) {
+                    _request(_devices[_index], powerData);
+                  }
+                  setState(() => _starmaxMap['PowerData'] = powerData);
+                },
+                child: RichText(
+                  text: TextSpan(
+                    text: 'PowerData',
+                    style: _textStyle(),
+                    children: [TextSpan(text: ' ${_starmaxMap['PowerData']}')],
+                  ),
+                ),
+              ),*/
+
+/*              TextButton(
+                onPressed: () async {
+                  final sportHistoryData = await _saveUsStarmaxPlugin.getSportHistory();
+                  if (sportHistoryData != null) {
+                    _request(_devices[_index], sportHistoryData);
+                  }
+                  setState(() => _starmaxMap['SportHistory'] = sportHistoryData);
+                },
+                child: RichText(
+                  text: TextSpan(
+                    text: 'SportHistory',
+                    style: _textStyle(),
+                    children: [TextSpan(text: ' ${_starmaxMap['SportHistory']}')],
+                  ),
+                ),
+              ),*/
+
+/*              TextButton(
+                onPressed: () async {
+                  final stepHistoryData = await _saveUsStarmaxPlugin.getStepHistory({
+                    'year': 2024,
+                    'month': 7,
+                    'date': 8,
+                    'hour': 0,
+                    'minute': 0,
+                    'second': 0,
+                  });
+                  if (stepHistoryData != null) {
+                    _request(_devices[_index], stepHistoryData);
+                  }
+                  setState(() => _starmaxMap['StepHistory'] = stepHistoryData);
+                },
+                child: RichText(
+                  text: TextSpan(
+                    text: 'StepHistory',
+                    style: _textStyle(),
+                    children: [TextSpan(text: ' ${_starmaxMap['StepHistory']}')],
+                  ),
+                ),
+              ),*/
+
+/*              TextButton(
+                onPressed: () async {
+                  final bloodPressureHistoryData = await _saveUsStarmaxPlugin.getBloodPressureHistory({
+                    'year': 2024,
+                    'month': 7,
+                    'date': 8,
+                    'hour': 0,
+                    'minute': 0,
+                    'second': 0,
+                  });
+                  if (bloodPressureHistoryData != null) {
+                    _request(_devices[_index], bloodPressureHistoryData);
+                  }
+                  setState(() => _starmaxMap['BloodPressureHistory'] = bloodPressureHistoryData);
+                },
+                child: RichText(
+                  text: TextSpan(
+                    text: 'BloodPressureHistory',
+                    style: _textStyle(),
+                    children: [TextSpan(text: ' ${_starmaxMap['BloodPressureHistory']}')],
+                  ),
+                ),
+              ),*/
+
+/*              TextButton(
+                onPressed: () async {
+                  final bloodOxygenHistoryData = await _saveUsStarmaxPlugin.getBloodOxygenHistory({
+                    'year': 2024,
+                    'month': 7,
+                    'date': 8,
+                    'hour': 0,
+                    'minute': 0,
+                    'second': 0,
+                  });
+                  if (bloodOxygenHistoryData != null) {
+                    _request(_devices[_index], bloodOxygenHistoryData);
+                  }
+                  setState(() => _starmaxMap['BloodOxygenHistory'] = bloodOxygenHistoryData);
+                },
+                child: RichText(
+                  text: TextSpan(
+                    text: 'BloodOxygenHistory',
+                    style: _textStyle(),
+                    children: [TextSpan(text: ' ${_starmaxMap['BloodOxygenHistory']}')],
+                  ),
+                ),
+              ),*/
+
+/*              TextButton(
+                onPressed: () async {
+                  final pressureHistoryData = await _saveUsStarmaxPlugin.getPressureHistory({
+                    'year': 2024,
+                    'month': 7,
+                    'date': 8,
+                    'hour': 0,
+                    'minute': 0,
+                    'second': 0,
+                  });
+                  if (pressureHistoryData != null) {
+                    _request(_devices[_index], pressureHistoryData);
+                  }
+                  setState(() => _starmaxMap['PressureHistory'] = pressureHistoryData);
+                },
+                child: RichText(
+                  text: TextSpan(
+                    text: 'PressureHistory',
+                    style: _textStyle(),
+                    children: [TextSpan(text: ' ${_starmaxMap['PressureHistory']}')],
+                  ),
+                ),
+              ),*/
+
+
+           /*   TextButton(
+                onPressed: () async {
+                  final metHistoryData = await _saveUsStarmaxPlugin.getMetHistory({
+                    'year': 2024,
+                    'month': 7,
+                    'date': 8,
+                    'hour': 0,
+                    'minute': 0,
+                    'second': 0,
+                  });
+                  if (metHistoryData != null) {
+                    _request(_devices[_index], metHistoryData);
+                  }
+                  setState(() => _starmaxMap['MetHistory'] = metHistoryData);
+                },
+                child: RichText(
+                  text: TextSpan(
+                    text: 'MetHistory',
+                    style: _textStyle(),
+                    children: [TextSpan(text: ' ${_starmaxMap['MetHistory']}')],
+                  ),
+                ),
+              ),*/
+
+       /*       TextButton(
+                onPressed: () async {
+                  final tempHistoryData = await _saveUsStarmaxPlugin.getTempHistory({
+                    'year': 2024,
+                    'month': 7,
+                    'date': 8,
+                    'hour': 0,
+                    'minute': 0,
+                    'second': 0,
+                  });
+                  if (tempHistoryData != null) {
+                    _request(_devices[_index], tempHistoryData);
+                  }
+                  setState(() => _starmaxMap['TempHistory'] = tempHistoryData);
+                },
+                child: RichText(
+                  text: TextSpan(
+                    text: 'TempHistory',
+                    style: _textStyle(),
+                    children: [TextSpan(text: ' ${_starmaxMap['TempHistory']}')],
+                  ),
+                ),
+              )*/
+
+         /*     TextButton(
+                onPressed: () async {
+                  final longSitData = await _saveUsStarmaxPlugin.getLongSit();
+                  if (longSitData != null) {
+                    _request(_devices[_index], longSitData);
+                  }
+                  setState(() => _starmaxMap['LongSitData'] = longSitData);
+                },
+                child: RichText(
+                  text: TextSpan(
+                    text: 'LongSitData',
+                    style: _textStyle(),
+                    children: [TextSpan(text: ' ${_starmaxMap['LongSitData']}')],
+                  ),
+                ),
+              ),*/
+
+/*              TextButton(
+                onPressed: () async {
+                  final drinkWaterData = await _saveUsStarmaxPlugin.getDrinkWater();
+                  if (drinkWaterData != null) {
+                    _request(_devices[_index], drinkWaterData);
+                  }
+                  setState(() => _starmaxMap['DrinkWaterData'] = drinkWaterData);
+                },
+                child: RichText(
+                  text: TextSpan(
+                    text: 'DrinkWaterData',
+                    style: _textStyle(),
+                    children: [TextSpan(text: ' ${_starmaxMap['DrinkWaterData']}')],
+                  ),
+                ),
+              ),*/
+
+/*              TextButton(
+                onPressed: () async {
+                  final result = await _saveUsStarmaxPlugin.setLongSit({
+                    'onOff': true,
+                    'startHour': 9,
+                    'startMinute': 30,
+                    'endHour': 21,
+                    'endMinute': 30,
+                    'interval': 15,
+                  });
+                  if (result != null) {
+                    setState(() => _starmaxMap['SetLongSit'] = result);
+                  }
+                },
+                child: RichText(
+                  text: TextSpan(
+                    text: 'SetLongSit',
+                    style: _textStyle(),
+                    children: [TextSpan(text: ' ${_starmaxMap['SetLongSit']}')],
+                  ),
+                ),
+              ),*/
+
+ /*             TextButton(
+                onPressed: () async {
+                  final result = await _saveUsStarmaxPlugin.setDrinkWater({
+                    'onOff': true,
+                    'startHour': 9,
+                    'startMinute': 30,
+                    'endHour': 21,
+                    'endMinute': 30,
+                    'interval': 15,
+                  });
+                  if (result != null) {
+                    setState(() => _starmaxMap['SetDrinkWater'] = result);
+                  }
+                },
+                child: RichText(
+                  text: TextSpan(
+                    text: 'SetDrinkWater',
+                    style: _textStyle(),
+                    children: [TextSpan(text: ' ${_starmaxMap['SetDrinkWater']}')],
+                  ),
+                ),
+              ),*/
+
+ /*             TextButton(
+                onPressed: () async {
+                  final result = await _saveUsStarmaxPlugin.setNotDisturb({
+                    'onOff': true,
+                    'allDayOnOff': false,
+                    'startHour': 9,
+                    'startMinute': 30,
+                    'endHour': 21,
+                    'endMinute': 30,
+                  });
+                  if (result != null) {
+                    setState(() => _starmaxMap['SetNotDisturb'] = result);
+                  }
+                },
+                child: RichText(
+                  text: TextSpan(
+                    text: 'SetNotDisturb',
+                    style: _textStyle(),
+                    children: [TextSpan(text: ' ${_starmaxMap['SetNotDisturb']}')],
+                  ),
+                ),
+              ),*/
+
+/*              TextButton(
+                onPressed: () async {
+                  final userInfo = await _saveUsStarmaxPlugin.setUserInfo({
+                    'sex': 0,
+                    'age': 20,
+                    'height': 170,
+                    'weight': 60,
+                  });
+                  if (userInfo != null) {
+                    _request(_devices[_index], userInfo);
+                  }
+                  setState(() => _starmaxMap['UserInfo'] = userInfo);
+                },
+                child: RichText(
+                  text: TextSpan(
+                    text: 'UserInfo',
+                    style: _textStyle(),
+                    children: [TextSpan(text: ' ${_starmaxMap['UserInfo']}')],
+                  ),
+                ),
+              ),*/
+
+           /*   TextButton(
+                onPressed: () async {
+                  final stateData = await _saveUsStarmaxPlugin.setState({
+                    'timeFormat': 1,
+                    'unitFormat': 0,
+                    'tempFormat': 0,
+                    'language': 9,
+                    'backlighting': 15,
+                    'screen': 70,
+                    'wristUp': true
+                  });
+                  if (stateData != null) {
+                    _request(_devices[_index], stateData);
+                  }
+                  setState(() => _starmaxMap['StateData'] = stateData);
+                },
+                child: RichText(
+                  text: TextSpan(
+                    text: 'StateData',
+                    style: _textStyle(),
+                    children: [TextSpan(text: ' ${_starmaxMap['StateData']}')],
+                  ),
+                ),
+              ),*/
+
+/*              TextButton(
+                onPressed: () async {
+                  final setTimeResult = await _saveUsStarmaxPlugin.setTime();
+                  if (setTimeResult != null) {
+                    print('setTime result: $setTimeResult');
+                    // _request(_devices[_index], setTimeResult); // 필요한 경우 요청 수행
+                  }
+                  setState(() => _starmaxMap['SetTime'] = setTimeResult);
+                },
+                child: RichText(
+                  text: TextSpan(
+                    text: 'SetTime',
+                    style: _textStyle(),
+                    children: [TextSpan(text: ' ${_starmaxMap['SetTime']}')],
+                  ),
+                ),
+              ),*/
+
+/*              TextButton(
+                onPressed: () async {
+                  final resetResult = await _saveUsStarmaxPlugin.reset();
+                  if (resetResult != null) {
+                    print('Reset result: $resetResult');
+                    // _request(_devices[_index], resetResult); // 필요한 경우 요청 수행
+                  }
+                  setState(() => _starmaxMap['Reset'] = resetResult);
+                },
+                child: RichText(
+                  text: TextSpan(
+                    text: 'Reset',
+                    style: _textStyle(),
+                    children: [TextSpan(text: ' ${_starmaxMap['Reset']}')],
+                  ),
+                ),
+              ),*/
+
+/*              TextButton(
+                onPressed: () async {
+                  final pairResult = await _saveUsStarmaxPlugin.pairing();
+                  if (pairResult != null) {
+                    print('Pair result: $pairResult');
+                    // _request(_devices[_index], pairResult); // 필요한 경우 요청 수행
+                  }
+                  setState(() => _starmaxMap['Pair'] = pairResult);
+                },
+                child: RichText(
+                  text: TextSpan(
+                    text: 'Pair',
+                    style: _textStyle(),
+                    children: [TextSpan(text: ' ${_starmaxMap['Pair']}')],
+                  ),
+                ),
+              ),*/
+
+
+
+
               TextButton(
                 onPressed: () async {
                   final starmaxArr =
-                      await _saveUsStarmaxPlugin.getValidHistoryDates(
+                  await _saveUsStarmaxPlugin.getValidHistoryDates(
                     /* HistoryType : kotlin.Enum<com.starmax.bluetoothsdk.data.HistoryType>
                       Sport = 0,
                       Step = 1,
@@ -301,10 +762,10 @@ class _MyAppState extends State<MyApp> {
               TextButton(
                 onPressed: () async {
                   final starmaxArr =
-                      await _saveUsStarmaxPlugin.getHeartRateHistory({
+                  await _saveUsStarmaxPlugin.getHeartRateHistory({
                     'year': 2024,
-                    'month': 3,
-                    'date': 21,
+                    'month': 7,
+                    'date': 8,
                     'hour': 0,
                     'minute': 0,
                     'second': 0,
@@ -327,7 +788,7 @@ class _MyAppState extends State<MyApp> {
               TextButton(
                 onPressed: () async {
                   final starmaxArr =
-                      await _saveUsStarmaxPlugin.getBloodSugarHistory({
+                  await _saveUsStarmaxPlugin.getBloodSugarHistory({
                     'year': 2024,
                     'month': 2,
                     'date': 27,
@@ -440,7 +901,7 @@ class _MyAppState extends State<MyApp> {
     for (final s in (await device.discoverServices())
         .where((e) => e.serviceUuid == Guid(_serviceUuid))) {
       for (final c in s.characteristics.where(
-          (e) => Guid(_writeCharacteristicsUuid) == e.characteristicUuid)) {
+              (e) => Guid(_writeCharacteristicsUuid) == e.characteristicUuid)) {
         try {
           await c.write(value);
         } catch (error) {
@@ -456,12 +917,12 @@ class _MyAppState extends State<MyApp> {
     while (SaveUsStarmaxPlatform.instance.hashCode > 0) {
       if (BluetoothConnectionState.disconnected == _connectionState) {
         await FlutterBluePlus.startScan(
-          withMsd: [
-            MsdFilter(
-              24576,
-              data: [66, 75, 45, 66, 76, 69],
-            )
-          ],
+          // withMsd: [
+          //   MsdFilter(
+          //     24576,
+          //     data: [66, 75, 45, 66, 76, 69],
+          //   )
+          // ],
           timeout: const Duration(seconds: 7),
         );
       }
@@ -475,7 +936,7 @@ class _MyAppState extends State<MyApp> {
 
   Future _connect(BluetoothDevice device) async {
     _streamConnectionState = device.connectionState.listen(
-      (BluetoothConnectionState state) async {
+          (BluetoothConnectionState state) async {
         if (state == BluetoothConnectionState.disconnected) {
           if (kDebugMode) {
             print(
@@ -529,6 +990,7 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
+
   Future requestPermissionForAndroid() async {
     final androidInfo = await DeviceInfoPlugin().androidInfo;
 
@@ -539,7 +1001,7 @@ class _MyAppState extends State<MyApp> {
       case > 30:
         if (!await Permission.bluetoothScan.isGranted) {
           final bluetoothScanGrant =
-              await Permission.bluetoothScan.request().isGranted;
+          await Permission.bluetoothScan.request().isGranted;
 
           if (kDebugMode) {
             print('bluetoothScanGrant:: $bluetoothScanGrant');
@@ -547,7 +1009,7 @@ class _MyAppState extends State<MyApp> {
         }
         if (!await Permission.bluetoothConnect.isGranted) {
           final bluetoothConnectGrant =
-              await Permission.bluetoothConnect.request().isGranted;
+          await Permission.bluetoothConnect.request().isGranted;
 
           if (kDebugMode) {
             print('bluetoothConnectGrant:: $bluetoothConnectGrant');
@@ -576,8 +1038,7 @@ class _MyAppState extends State<MyApp> {
 
   int _index = 0;
 
-  BluetoothConnectionState _connectionState =
-      BluetoothConnectionState.disconnected;
+  BluetoothConnectionState _connectionState = BluetoothConnectionState.disconnected;
 
   late StreamSubscription<BluetoothConnectionState> _streamConnectionState;
 

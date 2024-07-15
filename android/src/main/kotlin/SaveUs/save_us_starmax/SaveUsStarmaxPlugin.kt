@@ -187,7 +187,7 @@ class SaveUsStarmaxPlugin : FlutterPlugin, MethodCallHandler {
                 )
             )
 
-            "setHeartRateControl" -> result.success(
+            "setHeartRateControl" -> result.success( // 없음
                 setHeartRateControl(
                     startHour = call.argument("startHour") ?: 0,
                     startMinute = call.argument("startMinute") ?: 0,
@@ -468,11 +468,15 @@ class SaveUsStarmaxPlugin : FlutterPlugin, MethodCallHandler {
         return StarmaxSend().pair()
     }
 
-    // Pass the Bluetooth data packet returned by the device to the SDK
+    // Pass the Bluetooth data packet returned by the device to th
     // in the Bluetooth system callback function onCharacteristicChanged()
     private fun notify(value: ByteArray?): String {
         if (value != null) {
             try {
+                Log.d(
+                    this.javaClass.simpleName,
+                    "비교 값 : ${value}"
+                )
                 val response = starmaxNotify.notify(value)
 
                 Log.d(
@@ -485,6 +489,8 @@ class SaveUsStarmaxPlugin : FlutterPlugin, MethodCallHandler {
                 if (response.type == NotifyType.Failure) {
                     Log.d(this.javaClass.simpleName, "onCharacteristicChanged :: failure")
                 }
+                // SDK로 보내면 [218 , , , ] 이런식으로 보내면 사람이 읽을수 있게 리턴을 해줌.
+                // IOS도 SDK로 호출을 하고 나서 받는 작업 해여함
                 return response.toJson()
             } catch (e: Exception) {
                 return e.message ?: ""
