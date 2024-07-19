@@ -26,9 +26,13 @@ public class SwiftSaveUsStarmaxPlugin: NSObject, FlutterPlugin, CBCentralManager
         self.centralManager = CBCentralManager(delegate: self, queue: DispatchQueue.main)
         NotificationCenter.default.addObserver(self, selector: #selector(nofReviceData(_:)), name: NSNotification.Name(rawValue: Nof_Revice_Data_Key), object: nil)
         self.starmaxNotify = STBlueToothData.sharedInstance()
-        print("STBlueToothData initialized: \(self.starmaxNotify != nil)")
+        if self.starmaxNotify == nil {
+            print("Failed to initialize STBlueToothData")
+        } else {
+            print("STBlueToothData initialized successfully")
+        }
     }
-    
+
     @objc private func nofReviceData(_ notification: Notification) {
         guard let userInfo = notification.userInfo,
               let responseObject = notification.object as? Data else {
@@ -296,6 +300,7 @@ public class SwiftSaveUsStarmaxPlugin: NSObject, FlutterPlugin, CBCentralManager
             return
         }
         connectedPeripheral = peripheral
+        connectedPeripheral?.delegate = self
         centralManager.connect(peripheral, options: nil)
     }
 
@@ -542,51 +547,96 @@ public class SwiftSaveUsStarmaxPlugin: NSObject, FlutterPlugin, CBCentralManager
         guard let connectedPeripheral = connectedPeripheral,
               let writeCharacteristic = writeCharacteristic,
               let notifyCharacteristic = notifyCharacteristic else {
-            let errorDesc = "Peripheral or characteristics not found: " +
-                            "Peripheral is \(connectedPeripheral == nil ? "nil" : "set"), " +
-                            "Write Characteristic is \(writeCharacteristic == nil ? "nil" : "set"), " +
-                            "Notify Characteristic is \(notifyCharacteristic == nil ? "nil" : "set")"
-            print(errorDesc)
-            result("{\"error\": \"\(errorDesc)\"}")
+            result(FlutterError(code: "DEVICE_NOT_CONNECTED", message: "Device is not connected", details: nil))
             return
         }
 
-        let complete: (Error?, REV_TYPE, ERROR_TYPE, Any?) -> Void = { error, revType, errorType, responseObject in
-            if let error = error as NSError? {
-                result("{\"error\": \"Notification failed: \(error.localizedDescription)\"}")
-            } else if let data = responseObject as? Data {
-                let readableData = self.convertToReadableData(data: data)
-                let responseDict = [
-                    "type": "\(self.type)",
-                    "data": readableData
-                ]
-                if let jsonData = try? JSONSerialization.data(withJSONObject: responseDict, options: []),
-                   let jsonString = String(data: jsonData, encoding: .utf8) {
-                    result(jsonString)
+        let dummyError = NSError(domain: "", code: 0, userInfo: nil)
+
+        if type != "pair" {
+            // 파라미터 값이 올바르게 설정되었는지 확인
+            guard connectedPeripheral.state == .connected else {
+                result(FlutterError(code: "DEVICE_NOT_CONNECTED", message: "Peripheral is not connected", details: nil))
+                return
+            }
+
+            // 파라미터 상태 출력
+            print("connectedPeripheral: \(connectedPeripheral)")
+            print("writeCharacteristic: \(writeCharacteristic)")
+            print("notifyCharacteristic: \(notifyCharacteristic)")
+
+            starmaxNotify.notifyRunmefit(connectedPeripheral, writeCharacter: writeCharacteristic, characteristic: notifyCharacteristic, error: dummyError) { [weak self] error, revType, errorType, responseObject in
+                guard let self = self else { return }
+
+                if let nsError = error as NSError? {
+                    result(FlutterError(code: "NOTIFICATION_FAILED", message: nsError.localizedDescription, details: nil))
                 } else {
-                    result("{\"error\": \"Failed to serialize response\"}")
+                    let dict: [String: Any] = [
+                        ST_RevType_Key: revType.rawValue,
+                        ST_ErrorType_Key: errorType.rawValue
+                    ]
+
+                    NotificationCenter.default.post(name: NSNotification.Name(rawValue: self.Nof_Revice_Data_Key), object: responseObject, userInfo: dict)
+
+                    if let data = responseObject as? Data {
+                        let readableData = self.convertToReadableData(data: data)
+                        let responseDict: [String: Any] = [
+                            "type": "\(self.type)",
+                            "data": readableData
+                        ]
+
+                        do {
+                            let jsonData = try JSONSerialization.data(withJSONObject: responseDict, options: [])
+                            if let jsonString = String(data: jsonData, encoding: .utf8) {
+                                result(jsonString)
+                            } else {
+                                result(FlutterError(code: "SERIALIZATION_FAILED", message: "Failed to serialize response", details: nil))
+                            }
+                        } catch {
+                            result(FlutterError(code: "SERIALIZATION_FAILED", message: "Failed to serialize response", details: nil))
+                        }
+                    } else {
+                        result(FlutterError(code: "UNKNOWN_ERROR", message: "Unknown error occurred", details: nil))
+                    }
                 }
             }
         }
+    }
 
-        let dummyError = NSError(domain: "", code: 0, userInfo: nil)
-        starmaxNotify.notifyRunmefit(
-            connectedPeripheral,
-            writeCharacter: writeCharacteristic,
-            characteristic: notifyCharacteristic,
-            error: dummyError,
-            complete: complete
-        )
+    public func centralManagerDidUpdateState(_ central: CBCentralManager) {
+        switch central.state {
+        case .poweredOn:
+            print("Bluetooth is powered on")
+        case .poweredOff:
+            print("Bluetooth is powered off")
+        case .resetting:
+            print("Bluetooth is resetting")
+        case .unauthorized:
+            print("Bluetooth is unauthorized")
+        case .unsupported:
+            print("Bluetooth is unsupported")
+        case .unknown:
+            print("Bluetooth state is unknown")
+        @unknown default:
+            fatalError()
+        }
     }
 
     // Converts Data to a human-readable string of hex codes
     private func convertToReadableData(data: Data) -> String {
         return data.map { String(format: "%02x", $0) }.joined(separator: " ")
     }
+    
+    private func writeAndNotify(data: Data, completion: @escaping (Bool) -> Void) {
+        guard let peripheral = connectedPeripheral, let writeCharacteristic = writeCharacteristic, let notifyCharacteristic = self.notifyCharacteristic else {
+            print("DEVICE_NOT_CONNECTED: Either connectedPeripheral or writeCharacteristic is nil")
+            completion(false)
+            return
+        }
 
-    // CBCentralManagerDelegate methods
-    public func centralManagerDidUpdateState(_ central: CBCentralManager) {
-        // Handle central manager state updates
+        // 데이터 전송
+        peripheral.writeValue(data, for: writeCharacteristic, type: .withResponse)
+        peripheral.setNotifyValue(true, for: notifyCharacteristic)
     }
 
     public func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {

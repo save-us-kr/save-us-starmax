@@ -61,6 +61,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+    requestPermissions();
     // requestPermissionForAndroid();
     FlutterBluePlus.events.onConnectionStateChanged.listen((cs) {
       final status = cs.connectionState == BluetoothConnectionState.connected;
@@ -340,7 +341,7 @@ class _MyAppState extends State<MyApp> {
                 ),
               ),*/
 
-/*              TextButton(
+              TextButton(
                 onPressed: () async {
                   final powerData = await _saveUsStarmaxPlugin.getPower();
                   if (powerData != null) {
@@ -355,7 +356,7 @@ class _MyAppState extends State<MyApp> {
                     children: [TextSpan(text: ' ${_starmaxMap['PowerData']}')],
                   ),
                 ),
-              ),*/
+              ),
 
 /*              TextButton(
                 onPressed: () async {
@@ -898,19 +899,19 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future _request(BluetoothDevice device, Uint8List value) async {
-    for (final s in (await device.discoverServices())
-        .where((e) => e.serviceUuid == Guid(_serviceUuid))) {
-      for (final c in s.characteristics.where(
-              (e) => Guid(_writeCharacteristicsUuid) == e.characteristicUuid)) {
-        try {
-          await c.write(value);
-        } catch (error) {
-          if (kDebugMode) {
-            print('$value:: $error');
+      for (final s in (await device.discoverServices())
+          .where((e) => e.serviceUuid == Guid(_serviceUuid))) {
+        for (final c in s.characteristics.where(
+                (e) => Guid(_writeCharacteristicsUuid) == e.characteristicUuid)) {
+          try {
+            await c.write(value);
+          } catch (error) {
+            if (kDebugMode) {
+              print('$value:: $error');
+            }
           }
         }
       }
-    }
   }
 
   Future _startScan() async {
