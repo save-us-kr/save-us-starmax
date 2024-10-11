@@ -1,4 +1,4 @@
-group 'SaveUs.save_us_starmax'
+group 'save_us_starmax'
 version '1.0-SNAPSHOT'
 
 buildscript {
@@ -27,7 +27,7 @@ apply plugin: 'kotlin-android'
 
 android {
     if (project.android.hasProperty("namespace")) {
-        namespace 'SaveUs.save_us_starmax'
+        namespace 'save_us_starmax'
     }
     compileSdkVersion 33
 
@@ -62,11 +62,17 @@ android {
     }
 }
 
+repositories {
+    flatDir {
+        dirs 'libs'
+    }
+}
+
 dependencies {
     testImplementation 'org.jetbrains.kotlin:kotlin-test'
     testImplementation 'org.mockito:mockito-core:5.0.0'
 
-    implementation(fileTree(dir: "libs", include: ["*.jar"]))
+    compileOnly(fileTree(dir: "libs", include: ["*.aar"]))
 
-    compileOnly fileTree(dir: "libs", include: ["*.aar"])
+    implementation(fileTree(dir: "libs", include: ["*.jar"]))
 }

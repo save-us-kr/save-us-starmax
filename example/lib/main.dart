@@ -27,6 +27,7 @@ class MyApp extends StatefulWidget {
     super.key,
     required this.prefs,
   });
+
   final SharedPreferences prefs;
 
   @override

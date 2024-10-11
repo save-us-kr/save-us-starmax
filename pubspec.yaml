@@ -35,7 +35,7 @@ flutter:
   plugin:
     platforms:
       android:
-        package: SaveUs.save_us_starmax
+        package: save_us_starmax
         pluginClass: SaveUsStarmaxPlugin
       ios:
         pluginClass: SaveUsStarmaxPlugin
