@@ -250,7 +250,7 @@ class SaveUsStarmaxPlugin : FlutterPlugin, MethodCallHandler {
     // HistoryType
     private fun getHistoryType(param: Int): HistoryType {
         return when (param) {
-            0 -> HistoryType.Sport
+            0 -> HistoryType.Sleep
             1 -> HistoryType.Step
             2 -> HistoryType.HeartRate
             3 -> HistoryType.BloodPressure
@@ -260,7 +260,7 @@ class SaveUsStarmaxPlugin : FlutterPlugin, MethodCallHandler {
             7 -> HistoryType.Temp
             8 -> HistoryType.Mai
             9 -> HistoryType.BloodSugar
-            else -> HistoryType.HeartRate
+            else -> HistoryType.Sport
         }
     }
 
