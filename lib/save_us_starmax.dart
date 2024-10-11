@@ -72,6 +72,10 @@ class SaveUsStarmax {
     return SaveUsStarmaxPlatform.instance.getStepHistory(param);
   }
 
+  Future<Uint8List?> getSleepHistory(Map<String, dynamic> param) {
+    return SaveUsStarmaxPlatform.instance.getSleepHistory(param);
+  }
+
   Future<Uint8List?> getHeartRateHistory(Map<String, dynamic> param) {
     return SaveUsStarmaxPlatform.instance.getHeartRateHistory(param);
   }

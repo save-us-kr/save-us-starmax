@@ -94,6 +94,10 @@ abstract class SaveUsStarmaxPlatform extends PlatformInterface {
     throw UnimplementedError();
   }
 
+  Future<Uint8List?> getSleepHistory(Map<String, dynamic> param) {
+    throw UnimplementedError();
+  }
+
   Future<Uint8List?> getHeartRateHistory(Map<String, dynamic> param) {
     throw UnimplementedError();
   }

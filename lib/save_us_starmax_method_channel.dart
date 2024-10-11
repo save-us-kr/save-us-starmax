@@ -90,6 +90,11 @@ class MethodChannelSaveUsStarmax extends SaveUsStarmaxPlatform {
   }
 
   @override
+  Future<Uint8List?> getSleepHistory(Map<String, dynamic> param) async {
+    return await methodChannel.invokeMethod('getSleepHistory', param);
+  }
+
+  @override
   Future<Uint8List?> getHeartRateHistory(Map<String, dynamic> param) async {
     return await methodChannel.invokeMethod('getHeartRateHistory', param);
   }

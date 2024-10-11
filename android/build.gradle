@@ -18,6 +18,7 @@ allprojects {
     repositories {
         google()
         mavenCentral()
+        flatDir { dirs 'libs' }
     }
 }
 
@@ -61,16 +62,11 @@ android {
     }
 }
 
-repositories {
-    flatDir { dirs 'libs' }
-}
-
 dependencies {
     testImplementation 'org.jetbrains.kotlin:kotlin-test'
     testImplementation 'org.mockito:mockito-core:5.0.0'
 
-    // TODO It should be included at the time of distribution.
-    // implementation(fileTree(dir: "src/main/libs"))
-    // implementation(fileTree(dir: "src/main/libs", include: ["*.aar"]))
-    implementation(fileTree(dir: "src/main/libs", include: ["*.jar"]))
+    implementation(fileTree(dir: "libs", include: ["*.jar"]))
+
+    compileOnly fileTree(dir: "libs", include: ["*.aar"])
 }
