@@ -1,0 +1,11 @@
+framework module TrusangBluetooth {
+  umbrella header "TrusangBluetooth.h"
+
+  export *
+  module * { export * }
+}
+
+module TrusangBluetooth.Swift {
+    header "TrusangBluetooth-Swift.h"
+    requires objc
+}
