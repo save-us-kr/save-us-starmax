@@ -1,4 +1,4 @@
-package SaveUs.save_us_starmax
+package save_us_starmax
 
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel

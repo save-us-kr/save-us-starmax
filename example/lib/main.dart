@@ -48,7 +48,12 @@ class MyApp extends StatefulWidget {
     super.key,
     this.prefs,
   });
+<<<<<<< HEAD
+
+  final SharedPreferences prefs;
+=======
   final SharedPreferences? prefs;
+>>>>>>> dev
 
   @override
   State<MyApp> createState() => _MyAppState();

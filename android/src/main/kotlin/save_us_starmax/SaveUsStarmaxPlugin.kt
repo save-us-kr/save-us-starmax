@@ -1,4 +1,4 @@
-package SaveUs.save_us_starmax
+package save_us_starmax
 
 import android.util.Log
 import androidx.annotation.NonNull
