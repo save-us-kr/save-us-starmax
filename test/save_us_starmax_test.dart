@@ -153,6 +153,11 @@ class MockSaveUsStarmaxPlatform
   }
 
   @override
+  Future<Uint8List?> getSleepHistory(Map<String, dynamic> param) {
+    return Future.value(Uint8List(16));
+  }
+
+  @override
   Future<Uint8List?> getTempHistory(Map<String, dynamic> param) {
     return Future.value(Uint8List(16));
   }

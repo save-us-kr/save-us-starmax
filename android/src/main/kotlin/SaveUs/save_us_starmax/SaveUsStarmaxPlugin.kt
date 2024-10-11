@@ -2,8 +2,7 @@ package SaveUs.save_us_starmax
 
 import android.util.Log
 import androidx.annotation.NonNull
-import com.starmax.bluetoothsdk.MapStarmaxNotify
-import com.starmax.bluetoothsdk.StarmaxSend
+import com.starmax.bluetoothsdk.*
 import com.starmax.bluetoothsdk.data.*
 import org.json.JSONObject
 import io.flutter.embedding.engine.plugins.FlutterPlugin
@@ -45,6 +44,20 @@ class SaveUsStarmaxPlugin : FlutterPlugin, MethodCallHandler {
                     call.argument("second") ?: 0,
                 )
                 return result.success(getStepHistory(calendar))
+            }
+
+            "getSleepHistory" -> {
+                val calendar = Calendar.getInstance()
+
+                calendar.set(
+                    call.argument("year") ?: 0,
+                    call.argument("month") ?: 0,
+                    call.argument("date") ?: 0,
+                    call.argument("hour") ?: 0,
+                    call.argument("minute") ?: 0,
+                    call.argument("second") ?: 0,
+                )
+                return result.success(getSleepHistory(calendar))
             }
 
             "getHeartRateHistory" -> {
@@ -284,6 +297,12 @@ class SaveUsStarmaxPlugin : FlutterPlugin, MethodCallHandler {
     // 25.Synchronize Sports Data
     private fun getSportHistory(): ByteArray {
         return StarmaxSend().getSportHistory()
+    }
+
+    // 6.41 Sync sleep records
+    // https://doc.runmefitserver.com
+    private fun getSleepHistory(calendar: Calendar): ByteArray {
+        return StarmaxSend().getSleepHistory(calendar)
     }
 
     // 26.Synchronize Data of Steps/Sleep
