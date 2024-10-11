@@ -743,7 +743,7 @@ class _MyAppState extends State<MyApp> {
                       Mai = 8,
                       BloodSugar = 9
                     */
-                    {'historyType': 9},
+                    {'historyType': 1},
                   );
                   if (starmaxArr != null) {
                     _request(_devices[_index], starmaxArr);
@@ -791,8 +791,8 @@ class _MyAppState extends State<MyApp> {
                   final starmaxArr =
                   await _saveUsStarmaxPlugin.getBloodSugarHistory({
                     'year': 2024,
-                    'month': 2,
-                    'date': 27,
+                    'month': 10,
+                    'date': 3,
                     'hour': 0,
                     'minute': 0,
                     'second': 0,
@@ -808,6 +808,31 @@ class _MyAppState extends State<MyApp> {
                     style: _textStyle(),
                     children: [
                       TextSpan(text: ' ${_starmaxMap['BloodSugarHistory']}')
+                    ],
+                  ),
+                ),
+              ),
+              TextButton(
+                onPressed: () async {
+                  final starmaxArr = await _saveUsStarmaxPlugin.getStepHistory({
+                    'year': 2024,
+                    'month': 10,
+                    'date': 3,
+                    'hour': 0,
+                    'minute': 0,
+                    'second': 0,
+                  });
+                  if (starmaxArr != null) {
+                    await _request(_devices[_index], starmaxArr);
+                  }
+                  setState(() => _starmaxMap['StepHistory'] = starmaxArr);
+                },
+                child: RichText(
+                  text: TextSpan(
+                    text: 'StepHistory',
+                    style: _textStyle(),
+                    children: [
+                      TextSpan(text: ' ${_starmaxMap['StepHistory']}')
                     ],
                   ),
                 ),
@@ -918,12 +943,36 @@ class _MyAppState extends State<MyApp> {
     while (SaveUsStarmaxPlatform.instance.hashCode > 0) {
       if (BluetoothConnectionState.disconnected == _connectionState) {
         await FlutterBluePlus.startScan(
-          // withMsd: [
-          //   MsdFilter(
-          //     24576,
-          //     data: [66, 75, 45, 66, 76, 69],
-          //   )
-          // ],
+          withMsd: [
+            MsdFilter(
+              24576,
+              data: [66, 75, 45, 66, 76, 69],
+            ),
+            MsdFilter(512, data: [
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ])
+          ],
           timeout: const Duration(seconds: 7),
         );
       }
