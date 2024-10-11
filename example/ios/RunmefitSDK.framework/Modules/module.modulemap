@@ -1,0 +1,6 @@
+framework module RunmefitSDK {
+  umbrella header "RunmefitSDK.h"
+
+  export *
+  module * { export * }
+}

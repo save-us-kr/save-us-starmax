@@ -1,0 +1,2098 @@
+// swift-interface-format-version: 1.0
+// swift-compiler-version: Apple Swift version 5.3.2 (swiftlang-1200.0.45 clang-1200.0.32.28)
+// swift-module-flags: -target armv7s-apple-ios8.0 -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -module-name TrusangBluetooth
+import CoreBluetooth
+import Foundation
+import Swift
+@_exported import TrusangBluetooth
+import UIKit
+@objc public enum ECGMeasuringState : Swift.Int {
+  case prepare = 0
+  case measuring = 1
+  case analysis = 2
+  case faild = 3
+  case complete = 4
+  public typealias RawValue = Swift.Int
+  public init?(rawValue: Swift.Int)
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+@_inheritsConvenienceInitializers @objc public class ZHJECGProcessor : TrusangBluetooth.ZHJBaseProcessor {
+  @objc public static let shared: TrusangBluetooth.ZHJECGProcessor
+  public typealias ECGMeasuringBlock = (CoreGraphics.CGFloat) -> Swift.Void
+  public typealias ECGStateBlock = (TrusangBluetooth.ECGMeasuringState) -> Swift.Void
+  public typealias ECGHeartRateBlock = (Swift.Int) -> Swift.Void
+  public typealias ECGReportBlock = ([Swift.Int]) -> Swift.Void
+  public typealias ECGHistoryBlock = (TrusangBluetooth.ZHJECG) -> Swift.Void
+  @nonobjc override public init()
+  @objc public func ecgStart(startHandle: @escaping TrusangBluetooth.ZHJECGProcessor.SetReturn)
+  @objc public func ecgEnd(endHandle: @escaping TrusangBluetooth.ZHJECGProcessor.SetReturn)
+  @objc public func readEcgHistoryRecord(ecgHandle: @escaping TrusangBluetooth.ZHJECGProcessor.ECGHistoryBlock, historyDoneHandle: @escaping TrusangBluetooth.ZHJECGProcessor.ProcessorReturn)
+  @objc public func readECG(measuring: @escaping TrusangBluetooth.ZHJECGProcessor.ECGMeasuringBlock)
+  @objc public func readHeartRate(heartRate: @escaping TrusangBluetooth.ZHJECGProcessor.ECGHeartRateBlock)
+  @objc public func readECGState(measuringState: @escaping TrusangBluetooth.ZHJECGProcessor.ECGStateBlock)
+  @objc public func readECGReport(report: @escaping TrusangBluetooth.ZHJECGProcessor.ECGReportBlock)
+  @objc deinit
+}
+@objc public enum DeviceState : Swift.Int {
+  case `default`
+  case searching
+  case connecting
+  case connected
+  case disconnected
+  public typealias RawValue = Swift.Int
+  public init?(rawValue: Swift.Int)
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+@objc public enum ZHJBTManagerState : Swift.Int {
+  case unknown
+  case resetting
+  case unsupported
+  case unauthorized
+  case poweredOff
+  case poweredOn
+  public typealias RawValue = Swift.Int
+  public init?(rawValue: Swift.Int)
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+extension NSNotification.Name {
+  public static let NOTIFY_DEVICE_DID_CONNECT: Foundation.NSNotification.Name
+  public static let NOTIFY_DEVICE_DID_DISCONNECT: Foundation.NSNotification.Name
+  public static let NOTIFY_BLE_DATA_RECEIVED: Foundation.NSNotification.Name
+  public static let NOTIFY_ECG_DATA_RECEIVED: Foundation.NSNotification.Name
+  public static let NOTIFY_BLE_DATA_TIMEOUT: Foundation.NSNotification.Name
+}
+@_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers @objc public class ZHJBLEManagerProvider : ObjectiveC.NSObject {
+  @objc public static let shared: TrusangBluetooth.ZHJBLEManagerProvider
+  public typealias ZHJDviceStateUpdate = (TrusangBluetooth.DeviceState) -> Swift.Void
+  public typealias ZHJBTProviderManagerStateUpdate = (TrusangBluetooth.ZHJBTManagerState) -> Swift.Void
+  public typealias ZHJBTProviderDiscoverDevice = ([TrusangBluetooth.ZHJBTDevice]) -> Swift.Void
+  public typealias ZHJBTProviderConnectSucceeded = (CoreBluetooth.CBPeripheral) -> Swift.Void
+  public typealias ZHJBTProviderConnectFailed = (CoreBluetooth.CBPeripheral, Swift.Error?) -> Swift.Void
+  public typealias ZHJBTProviderDisconnected = (CoreBluetooth.CBPeripheral) -> Swift.Void
+  public typealias ZHJBTProviderDiscoverServices = ([CoreBluetooth.CBService]) -> Swift.Void
+  public typealias ZHJBTProviderDiscoverServerCharacteristic = (CoreBluetooth.CBCharacteristic) -> Swift.Void
+  public typealias ZHJBTProviderDidUpdateValue = (CoreBluetooth.CBCharacteristic) -> Swift.Void
+  public typealias ZHJBTProviderConnectTimeout = () -> Swift.Void
+  @objc public var btManager: CoreBluetooth.CBCentralManager?
+  @objc public var currentDevice: TrusangBluetooth.ZHJBTDevice?
+  @objc public var deviceArr: [TrusangBluetooth.ZHJBTDevice]
+  @objc public var deviceState: TrusangBluetooth.DeviceState
+  @objc public var canScanDFU: Swift.Bool
+  @objc public var cmdDone: Swift.Bool
+  @objc public func bluetoothProviderManagerStateDidUpdate(state: @escaping TrusangBluetooth.ZHJBLEManagerProvider.ZHJBTProviderManagerStateUpdate)
+  @objc public func setDataReceiveTimeout(_ seconds: Swift.Int)
+  @objc public func removeAutoReconnectDevice()
+  @objc public func autoReconnect(success: @escaping TrusangBluetooth.ZHJBLEManagerProvider.ZHJBTProviderConnectSucceeded, fail: @escaping TrusangBluetooth.ZHJBLEManagerProvider.ZHJBTProviderConnectFailed)
+  @objc public func connectDevice(device: TrusangBluetooth.ZHJBTDevice, success: @escaping TrusangBluetooth.ZHJBLEManagerProvider.ZHJBTProviderConnectSucceeded, fail: @escaping TrusangBluetooth.ZHJBLEManagerProvider.ZHJBTProviderConnectFailed, timeout: @escaping TrusangBluetooth.ZHJBLEManagerProvider.ZHJBTProviderConnectTimeout)
+  @objc public func disconnectDevice(disconnect: @escaping TrusangBluetooth.ZHJBLEManagerProvider.ZHJBTProviderDisconnected)
+  @objc public func scan(discover: @escaping TrusangBluetooth.ZHJBLEManagerProvider.ZHJBTProviderDiscoverDevice)
+  @objc public func scan(seconds: Foundation.TimeInterval, discover: @escaping TrusangBluetooth.ZHJBLEManagerProvider.ZHJBTProviderDiscoverDevice)
+  @objc public func stopScan()
+  @objc public func deviceStateDidUpdated(stateUpdate: @escaping TrusangBluetooth.ZHJBLEManagerProvider.ZHJDviceStateUpdate)
+  @objc public func discoverWriteCharacteristic(write: @escaping TrusangBluetooth.ZHJBLEManagerProvider.ZHJBTProviderDiscoverServerCharacteristic)
+  @objc public func discoverReadCharacteristic(read: @escaping TrusangBluetooth.ZHJBLEManagerProvider.ZHJBTProviderDiscoverServerCharacteristic)
+  @objc deinit
+}
+extension ZHJBLEManagerProvider : CoreBluetooth.CBCentralManagerDelegate, CoreBluetooth.CBPeripheralDelegate {
+  @objc dynamic public func centralManagerDidUpdateState(_ central: CoreBluetooth.CBCentralManager)
+  @objc dynamic public func centralManager(_ central: CoreBluetooth.CBCentralManager, didDiscover peripheral: CoreBluetooth.CBPeripheral, advertisementData: [Swift.String : Any], rssi RSSI: Foundation.NSNumber)
+  @objc dynamic public func centralManager(_ central: CoreBluetooth.CBCentralManager, didConnect peripheral: CoreBluetooth.CBPeripheral)
+  @objc dynamic public func centralManager(_ central: CoreBluetooth.CBCentralManager, didFailToConnect peripheral: CoreBluetooth.CBPeripheral, error: Swift.Error?)
+  @objc dynamic public func centralManager(_ central: CoreBluetooth.CBCentralManager, didDisconnectPeripheral peripheral: CoreBluetooth.CBPeripheral, error: Swift.Error?)
+  @objc dynamic public func peripheral(_ peripheral: CoreBluetooth.CBPeripheral, didDiscoverServices error: Swift.Error?)
+  @objc dynamic public func peripheral(_ peripheral: CoreBluetooth.CBPeripheral, didDiscoverCharacteristicsFor service: CoreBluetooth.CBService, error: Swift.Error?)
+  @objc dynamic public func peripheral(_ peripheral: CoreBluetooth.CBPeripheral, didUpdateNotificationStateFor characteristic: CoreBluetooth.CBCharacteristic, error: Swift.Error?)
+  @objc dynamic public func peripheral(_ peripheral: CoreBluetooth.CBPeripheral, didUpdateValueFor characteristic: CoreBluetooth.CBCharacteristic, error: Swift.Error?)
+}
+extension ZHJBLEManagerProvider {
+  @objc dynamic public func setBodyInfo(gender: Swift.Int, age: Swift.Int, height: CoreGraphics.CGFloat, weight: CoreGraphics.CGFloat, calculateRMR: Swift.Bool)
+}
+@_inheritsConvenienceInitializers @objc public class ZHJWeather : ObjectiveC.NSObject {
+  @objc public var temp: Swift.String
+  @objc public var weatherConditionCode: Swift.String
+  @objc public var unit: Swift.Int
+  @objc deinit
+  @objc override dynamic public init()
+}
+@_inheritsConvenienceInitializers @objc public class ZHJBLEMessage : ObjectiveC.NSObject {
+  @objc public var cmd: TrusangBluetooth.ZHJBLE_Read_CMD
+  @objc public var state: TrusangBluetooth.ZHJBLEError
+  @objc public var message: Swift.String?
+  @nonobjc override public init()
+  @objc deinit
+}
+@_inheritsConvenienceInitializers @objc public class ZHJSyncTime : ObjectiveC.NSObject {
+  @objc public var year: Swift.Int
+  @objc public var month: Swift.Int
+  @objc public var day: Swift.Int
+  @objc public var hour: Swift.Int
+  @objc public var minute: Swift.Int
+  @objc public var second: Swift.Int
+  @objc public var timeZone: Swift.Int
+  @nonobjc override public init()
+  @objc deinit
+}
+extension ZHJSyncTime {
+  @objc convenience dynamic public init(_ date: Foundation.Date)
+}
+@_inheritsConvenienceInitializers @objc public class ZHJSportTargetInfo : ObjectiveC.NSObject {
+  @objc public var enable: Swift.Bool
+  @objc public var value: Swift.Int
+  @objc deinit
+  @objc override dynamic public init()
+}
+@_inheritsConvenienceInitializers @objc public class ZHJSportTarget : ObjectiveC.NSObject {
+  @objc public var sleepTarget: TrusangBluetooth.ZHJSportTargetInfo
+  @objc public var stepTarget: TrusangBluetooth.ZHJSportTargetInfo
+  @objc public var caloriesTarget: TrusangBluetooth.ZHJSportTargetInfo
+  @objc public var distanceTarget: TrusangBluetooth.ZHJSportTargetInfo
+  @objc deinit
+  @objc override dynamic public init()
+}
+@_inheritsConvenienceInitializers @objc public class ZHJHRTimingDetect_t : ObjectiveC.NSObject {
+  @objc public var interval: Swift.Int
+  @objc public var detectEnable: Swift.Bool
+  @objc deinit
+  @objc override dynamic public init()
+}
+@_inheritsConvenienceInitializers @objc public class ZHJHRAlarm_t : ObjectiveC.NSObject {
+  @objc public var max: Swift.Int
+  @objc public var min: Swift.Int
+  @objc public var alarmEnable: Swift.Bool
+  @objc deinit
+  @objc override dynamic public init()
+}
+@_inheritsConvenienceInitializers @objc public class ZHJBPAlarm_t : ObjectiveC.NSObject {
+  @objc public var maxDBP: Swift.Int
+  @objc public var minDBP: Swift.Int
+  @objc public var maxSBP: Swift.Int
+  @objc public var minSBP: Swift.Int
+  @objc public var alarmEnable: Swift.Bool
+  @objc deinit
+  @objc override dynamic public init()
+}
+@_inheritsConvenienceInitializers @objc public class ZHJBOAlarm_t : ObjectiveC.NSObject {
+  @objc public var min: Swift.Int
+  @objc public var alarmEnable: Swift.Bool
+  @objc deinit
+  @objc override dynamic public init()
+}
+@_inheritsConvenienceInitializers @objc public class ZHJTemperatureTimingDetect_t : ObjectiveC.NSObject {
+  @objc public var interval: Swift.Int
+  @objc public var detectEnable: Swift.Bool
+  @objc deinit
+  @objc override dynamic public init()
+}
+@_inheritsConvenienceInitializers @objc public class ZHJTemperatureAlarm_t : ObjectiveC.NSObject {
+  @objc public var max: Swift.Int
+  @objc public var alarmEnable: Swift.Bool
+  @objc deinit
+  @objc override dynamic public init()
+}
+@_inheritsConvenienceInitializers @objc public class ZHJMessageNotice : ObjectiveC.NSObject {
+  @objc public var twitter: Swift.Bool
+  @objc public var facebook: Swift.Bool
+  @objc public var email: Swift.Bool
+  @objc public var sms: Swift.Bool
+  @objc public var incoming: Swift.Bool
+  @objc public var whatsapp: Swift.Bool
+  @objc public var line: Swift.Bool
+  @objc public var skype: Swift.Bool
+  @objc public var qq: Swift.Bool
+  @objc public var wechat: Swift.Bool
+  @objc public var instagram: Swift.Bool
+  @objc public var linkedin: Swift.Bool
+  @objc public var messenger: Swift.Bool
+  @objc public var vk: Swift.Bool
+  @objc public var viber: Swift.Bool
+  @objc public var dingtalk: Swift.Bool
+  @objc public var telegram: Swift.Bool
+  @objc public var sinaweibo: Swift.Bool
+  @objc public var kakao: Swift.Bool
+  @objc deinit
+  @objc override dynamic public init()
+}
+public func delay(by delayTime: Foundation.TimeInterval, qosClass: Dispatch.DispatchQoS.QoSClass? = nil, _ closure: @escaping () -> Swift.Void)
+@_inheritsConvenienceInitializers @objc public class ZHJDeviceInfoProcessor : TrusangBluetooth.ZHJBaseProcessor {
+  @objc public static let shared: TrusangBluetooth.ZHJDeviceInfoProcessor
+  public typealias DeviceInfoBlock = (TrusangBluetooth.ZHJBTDevice) -> Swift.Void
+  @nonobjc override public init()
+  @objc public func readDeviceInfo(deviceInfoHandle: @escaping TrusangBluetooth.ZHJDeviceInfoProcessor.DeviceInfoBlock)
+  @objc deinit
+}
+@_inheritsConvenienceInitializers @objc public class ZHJTemperatureProcessor : TrusangBluetooth.ZHJBaseProcessor {
+  @objc public static let shared: TrusangBluetooth.ZHJTemperatureProcessor
+  public typealias HistoryDataBlock = (TrusangBluetooth.ZHJTemperature) -> Swift.Void
+  public typealias CurrentDataBlock = (TrusangBluetooth.ZHJTemperatureDetail) -> Swift.Void
+  public typealias TemperatureTimingDetectBlock = (TrusangBluetooth.ZHJTemperatureTimingDetect_t) -> Swift.Void
+  public typealias TemperatureAlarmBlock = (TrusangBluetooth.ZHJTemperatureAlarm_t) -> Swift.Void
+  @nonobjc override public init()
+  @objc public func clearTemperatureRecord(clearHandle: @escaping TrusangBluetooth.ZHJTemperatureProcessor.SetReturn)
+  @objc public func setTemperatureAlarmLimit(maxTemperature: Swift.Int, isOn: Swift.Bool, setHandle: @escaping TrusangBluetooth.ZHJTemperatureProcessor.SetReturn)
+  @objc public func setAutoDetectTemperature(interval: Swift.Int, isOn: Swift.Bool, setHandle: @escaping TrusangBluetooth.ZHJTemperatureProcessor.SetReturn)
+  @objc public func readCurrentTemperature(currentDataHandle: @escaping TrusangBluetooth.ZHJTemperatureProcessor.CurrentDataBlock)
+  @objc public func readTemperatureAlarmSetting(temperatureAlarmHandle: @escaping TrusangBluetooth.ZHJTemperatureProcessor.TemperatureAlarmBlock)
+  @objc public func readTemperatureTimingDetectSetting(temperatureTimingDetectHandle: @escaping TrusangBluetooth.ZHJTemperatureProcessor.TemperatureTimingDetectBlock)
+  @objc public func readTemperatureHistoryRecord(_ date: Swift.String, historyDataHandle: @escaping TrusangBluetooth.ZHJTemperatureProcessor.HistoryDataBlock, historyDoneHandle: @escaping TrusangBluetooth.ZHJTemperatureProcessor.ProcessorReturn)
+  @objc deinit
+}
+@objc public enum ZHJBLE_Write_CMD : Swift.Int {
+  case deviceInfo = 0x01
+  case deviceConfig = 0x02
+  case userInfo = 0x03
+  case syncTime = 0x04
+  case alarmClock = 0x05
+  case sedentary = 0x06
+  case sportTarget = 0x07
+  case autoSleepTime = 0x08
+  case messageNotice = 0x09
+  case message = 0x0A
+  case firmwareUpgrade = 0x0B
+  case verifyLink = 0x0C
+  case deviceControl = 0x10
+  case step_sleep = 0x20
+  case HR_BP_BO = 0x21
+  case ECG = 0x22
+  case sportMode = 0x23
+  case uv = 0x24
+  case weather = 0x25
+  case clearDeviceRecord = 0x26
+  case battery = 0x27
+  case hardwareConfig = 0x28
+  case highPrecisionSleep = 0x29
+  case temperature = 0x2C
+  case realTimeHealthData = 0x2A
+  case dial = 0x2D
+  case eventReminder = 0x2E
+  case deviceFeature = 0x2F
+  case unknow = 0x00
+  public typealias RawValue = Swift.Int
+  public var rawValue: Swift.Int {
+    get
+  }
+  public init?(rawValue: Swift.Int)
+}
+@objc public enum ZHJBLE_Read_CMD : Swift.Int {
+  case deviceInfo = 0x81
+  case deviceConfig = 0x82
+  case userInfo = 0x83
+  case syncTime = 0x84
+  case alarmClock = 0x85
+  case sedentary = 0x86
+  case sportTarget = 0x87
+  case autoSleepTime = 0x88
+  case messageNotice = 0x89
+  case message = 0x8A
+  case firmwareUpgrade = 0x8B
+  case verifyLink = 0x8C
+  case deviceControl = 0x90
+  case step_sleep = 0xA0
+  case HR_BP_BO = 0xA1
+  case ECG = 0xA2
+  case sportMode = 0xA3
+  case uv = 0xA4
+  case weather = 0xA5
+  case clearDeviceRecord = 0xA6
+  case battery = 0xA7
+  case hardwareConfig = 0xA8
+  case highPrecisionSleep = 0xA9
+  case realTimeHealthData = 0xAA
+  case temperature = 0xAC
+  case dial = 0xAD
+  case eventReminder = 0xAE
+  case deviceFeature = 0xAF
+  case unknow = 0x00
+  public typealias RawValue = Swift.Int
+  public init?(rawValue: Swift.Int)
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+@objc public enum ZHJlLanguage : Swift.Int {
+  case english = 0x00
+  case chinese = 0x01
+  case russian = 0x02
+  case ukrainian = 0x03
+  case french = 0x04
+  case spanish = 0x05
+  case portuguese = 0x06
+  case german = 0x07
+  case japan = 0x08
+  case poland = 0x09
+  case italy = 0x0A
+  case romania = 0x0B
+  case td_chinese = 0x0C
+  case korean = 0x0D
+  case thai = 0x0E
+  case netherlands = 0x0F
+  public typealias RawValue = Swift.Int
+  public init?(rawValue: Swift.Int)
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+@objc public enum ZHJTimeMode : Swift.Int {
+  case hour24 = 0x00
+  case hour12 = 0x01
+  public typealias RawValue = Swift.Int
+  public init?(rawValue: Swift.Int)
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+@objc public enum ZHJUnit : Swift.Int {
+  case metric = 0x00
+  case imperial = 0x01
+  public typealias RawValue = Swift.Int
+  public init?(rawValue: Swift.Int)
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+@objc public enum ZHJTemperatureUnit : Swift.Int {
+  case celsius = 0x00
+  case fahrenheit = 0x01
+  public typealias RawValue = Swift.Int
+  public init?(rawValue: Swift.Int)
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+@objc public enum ZHJWearStyle : Swift.Int {
+  case leftHand = 0x01
+  case rightHand = 0x02
+  public typealias RawValue = Swift.Int
+  public init?(rawValue: Swift.Int)
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+@objc public enum ZHJBLEError : Swift.Int {
+  case correct = 0x00
+  case cmd_incorrect = 0x01
+  case checkNum_incorrect = 0x02
+  case cmdLen_incorrect = 0x03
+  case subCmd_incorrect = 0x04
+  case data_invalid = 0x05
+  public typealias RawValue = Swift.Int
+  public init?(rawValue: Swift.Int)
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+@objc public enum ZHJSex : Swift.Int {
+  case male = 0x00
+  case female = 0x01
+  case unknow = 0x02
+  public typealias RawValue = Swift.Int
+  public init?(rawValue: Swift.Int)
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+@objc public enum ZHJAlarmClockType : Swift.Int {
+  case `default` = 0x00
+  case drink = 0x01
+  case takeMedicine = 0x02
+  case eat = 0x03
+  case sport = 0x04
+  case sleep = 0x05
+  case awake = 0x06
+  case date = 0x07
+  case party = 0x08
+  case meeting = 0x09
+  public typealias RawValue = Swift.Int
+  public init?(rawValue: Swift.Int)
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+@objc public enum ZHJSportTargetType : Swift.Int {
+  case sleep
+  case step
+  case calories
+  case distance
+  public typealias RawValue = Swift.Int
+  public init?(rawValue: Swift.Int)
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+@objc public enum ZHJMessageNoticeType : Swift.Int {
+  case twitter
+  case facebook
+  case email
+  case sms
+  case incoming
+  case whatsapp
+  case line
+  case skype
+  case qq
+  case wechat
+  case instagram
+  case linkedin
+  case messager
+  case vk
+  case viber
+  case dingtalk
+  case telegram
+  case sinaweibo
+  public typealias RawValue = Swift.Int
+  public init?(rawValue: Swift.Int)
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+@objc public enum ZHJDeviceControlType : Swift.Int {
+  case call
+  case sos
+  case photo
+  case music
+  case find
+  case quickReply
+  case familyCall
+  case gps
+  case `default`
+  public typealias RawValue = Swift.Int
+  public init?(rawValue: Swift.Int)
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+@objc public enum ZHJCallContrl : Swift.Int {
+  case `default` = 0x00
+  case answer = 0x01
+  case hangUp = 0x02
+  public typealias RawValue = Swift.Int
+  public init?(rawValue: Swift.Int)
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+@objc public enum ZHJSOSContrl : Swift.Int {
+  case `default` = 0x00
+  case answer = 0x01
+  public typealias RawValue = Swift.Int
+  public init?(rawValue: Swift.Int)
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+@objc public enum ZHJPhotoContrl : Swift.Int {
+  case `default` = 0x00
+  case start = 0x01
+  case takePhoto = 0x02
+  case end = 0x03
+  public typealias RawValue = Swift.Int
+  public init?(rawValue: Swift.Int)
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+@objc public enum ZHJMusicContrl : Swift.Int {
+  case `default` = 0x00
+  case playPause = 0x01
+  case previous = 0x02
+  case next = 0x03
+  case stop = 0x04
+  case volumePlus = 0x05
+  case volumeDecrease = 0x06
+  public typealias RawValue = Swift.Int
+  public init?(rawValue: Swift.Int)
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+@objc public enum ZHJFindContrl : Swift.Int {
+  case `default` = 0x00
+  case find = 0x01
+  public typealias RawValue = Swift.Int
+  public init?(rawValue: Swift.Int)
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+@objc public enum ZHJQuickReplyContrl : Swift.Int {
+  case `default` = 0x00
+  case start = 0x01
+  case cancel = 0x02
+  public typealias RawValue = Swift.Int
+  public init?(rawValue: Swift.Int)
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+@objc public enum ZHJFamliyCallContrl : Swift.Int {
+  case `default` = 0x00
+  case start = 0x01
+  case end = 0x02
+  public typealias RawValue = Swift.Int
+  public init?(rawValue: Swift.Int)
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+@objc public enum ZHJGPSContrl : Swift.Int {
+  case `default` = 0x00
+  case enable = 0x01
+  case disable = 0x02
+  public typealias RawValue = Swift.Int
+  public init?(rawValue: Swift.Int)
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+@objc public enum ZHJStepAndSleepSelectType : Swift.Int {
+  case currentStep = 0x00
+  case historyStepAndSleep = 0x01
+  case clearAll = 0x02
+  case recentSleep = 0x03
+  public typealias RawValue = Swift.Int
+  public init?(rawValue: Swift.Int)
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+@objc public enum ZHJStepAndSleepDataType : Swift.Int {
+  case walk = 0x00
+  case run = 0x01
+  case slowRun = 0x02
+  case sleep = 0x0F
+  public typealias RawValue = Swift.Int
+  public init?(rawValue: Swift.Int)
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+@objc public enum ZHJSleepType : Swift.Int {
+  case begin = 0x01
+  case light = 0x02
+  case deep = 0x03
+  case awake = 0x04
+  case REM = 0x05
+  public typealias RawValue = Swift.Int
+  public init?(rawValue: Swift.Int)
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+@objc public enum ZHJHR_BP_BOSelectType : Swift.Int {
+  case currentHR_BP_BO = 0x00
+  case historyHR_BP_BO = 0x01
+  case clearAll = 0x02
+  case HR_Max_Min = 0x03
+  case autoDetect_HR = 0x04
+  case startDetect_HR = 0x05
+  case endDetect_HR = 0x06
+  case GET_HR_Max_Min = 0x07
+  case GET_autoDetect_HR = 0x08
+  case HR_BP_BOCalibration = 0x09
+  case GET_HR_BP_BOCalibration = 0x0a
+  public typealias RawValue = Swift.Int
+  public init?(rawValue: Swift.Int)
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+@objc public enum ZHJTemperatureSelectType : Swift.Int {
+  case current = 0x00
+  case history = 0x01
+  case clearAll = 0x02
+  case setAlarm = 0x03
+  case setAutoDetect = 0x04
+  case getAlarm = 0x05
+  case getAutoDetect = 0x06
+  case startDetect = 0x07
+  case endDetect = 0x08
+  public typealias RawValue = Swift.Int
+  public init?(rawValue: Swift.Int)
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+@objc public enum ZHJSportModeType : Swift.Int {
+  case walk = 0x00
+  case run = 0x01
+  case swim = 0x02
+  case ride = 0x03
+  case indoorRun = 0x04
+  case freeTrain = 0x05
+  case football = 0x06
+  case basketball = 0x07
+  case badminton = 0x08
+  case ropeSkip = 0x09
+  case pushUps = 0x0A
+  case sitUps = 0x0B
+  case climb = 0x0C
+  case tennis = 0x0D
+  case HIT = 0x0E
+  case indoorBike = 0x0F
+  case fitness = 0x10
+  case rugby = 0x11
+  case golf = 0x12
+  case happyBike = 0x13
+  case weightlift = 0x14
+  case rollerSkate = 0x15
+  case dance = 0x16
+  case yoga = 0x17
+  case indoorWalk = 0x18
+  case onFoot = 0x19
+  case `default` = 0xFF
+  public typealias RawValue = Swift.Int
+  public init?(rawValue: Swift.Int)
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+@objc public enum ZHJSportModeDataType : Swift.Int {
+  case summary = 0x00
+  case detail = 0x01
+  case done = 0x02
+  case noRecord = 0x03
+  public typealias RawValue = Swift.Int
+  public init?(rawValue: Swift.Int)
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+@objc public enum ZHJBleApiCMD : Swift.Int {
+  case readMessageNotice = 0
+  case writeMessageNotice
+  case readSportModeHistoryRecord
+  case clearAllSportRecord
+  case resetDevice
+  case rebootDevice
+  case readDeviceTime
+  case writeTime
+  case readSedentary
+  case writeSedentary
+  case readSportTarget
+  case writeSportTarget
+  case readDeviceControlRealTimeData
+  case findDevice
+  case takePhoto
+  case takePhotoCancel
+  case setHeartRateAlarmLimit
+  case setAutoDetectHeartRate
+  case startDetectHeartRate
+  case endDetectHeartRate
+  case readCurrentHR_BP_BO
+  case readHeartAlarmSetting
+  case readHeartTimingDetectSetting
+  case setHR_BP_BOCalibration
+  case readHR_BP_BOCalibration
+  case readHR_BP_BOHistoryRecord
+  case ecgStart
+  case ecgEnd
+  case readEcgHistoryRecord
+  case readUserInfo
+  case writeUserInfo
+  case startFirmwareUpgrade
+  case readBatteryPower
+  case readAlarmClock
+  case writeAlarmClock
+  case readDeviceInfo
+  case readAutoSleepTime
+  case writeSleepSetting
+  case enablePair
+  case readCurrentStep
+  case readStepAndSleepHistoryRecord
+  case sendPairingCode
+  case closePairingCodeUI
+  case sendMessage
+  case readDeviceConfig
+  case writeDeviceConfig
+  case setTemperatureAlarmLimit
+  case setAutoDetectTemperature
+  case readCurrentTemperature
+  case readTemperatureAlarmSetting
+  case readTemperatureTimingDetectSetting
+  case readTemperatureHistoryRecord
+  case readSportConfig
+  case writeSportConfig
+  case sendDial
+  case readDrinkWaterConfig
+  case writeDrinkWaterConfig
+  case readRealTimeHealthData
+  case clearTemperatureRecord
+  case clearSportModeRecord
+  case clearHR_BP_BORecord
+  case clearStepAndSleepRecord
+  case syncWeather
+  public typealias RawValue = Swift.Int
+  public init?(rawValue: Swift.Int)
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+@_inheritsConvenienceInitializers @objc public class ZHJBTDevice : ObjectiveC.NSObject {
+  @objc public var name: Swift.String
+  @objc public var uuid: Swift.String
+  @objc public var mac: Swift.String
+  @objc public var rssi: Foundation.NSNumber
+  @objc public var version: Swift.String
+  @objc public var peripheral: CoreBluetooth.CBPeripheral?
+  @objc public var model: Swift.String?
+  @objc public var power: Swift.Int
+  @objc public var isConnected: Swift.Bool
+  @objc public var isANCSAuthorized: Swift.Bool
+  @objc public var sn: Swift.String
+  @objc override dynamic public init()
+  @objc deinit
+}
+@_inheritsConvenienceInitializers @objc public class ZHJSleep : TrusangBluetooth.ZHJDeviceDataBaseModel {
+  @objc public var details: [TrusangBluetooth.ZHJSleepDetail]
+  @objc public var beginDuration: Swift.Int
+  @objc public var lightDuration: Swift.Int
+  @objc public var deepDuration: Swift.Int
+  @objc public var awakeDuration: Swift.Int
+  @objc public var REMDuration: Swift.Int
+  @objc deinit
+  @objc override dynamic public init()
+}
+@_inheritsConvenienceInitializers @objc public class ZHJSleepDetail : ObjectiveC.NSObject {
+  @objc public var dateTime: Swift.String
+  @objc public var type: Swift.Int
+  @objc public var duration: Swift.Int
+  @objc deinit
+  @objc override dynamic public init()
+}
+@_inheritsConvenienceInitializers @objc public class ZHJFirmwareUpgradeProcessor : TrusangBluetooth.ZHJBaseProcessor {
+  @objc public static let shared: TrusangBluetooth.ZHJFirmwareUpgradeProcessor
+  @nonobjc override public init()
+  @objc public func startFirmwareUpgrade(readHandle: @escaping TrusangBluetooth.ZHJFirmwareUpgradeProcessor.SetReturn)
+  @objc deinit
+}
+@_inheritsConvenienceInitializers @objc public class ZHJStep : TrusangBluetooth.ZHJDeviceDataBaseModel {
+  @objc public var step: Swift.Int
+  @objc public var calories: CoreGraphics.CGFloat
+  @objc public var distance: CoreGraphics.CGFloat
+  @objc public var details: [TrusangBluetooth.ZHJStepDetail]
+  @objc public var duration: Swift.Int
+  @objc deinit
+  @objc override dynamic public init()
+}
+@_inheritsConvenienceInitializers @objc public class ZHJStepDetail : ObjectiveC.NSObject {
+  @objc public var dateTime: Swift.String
+  @objc public var type: Swift.Int
+  @objc public var calories: CoreGraphics.CGFloat
+  @objc public var distance: CoreGraphics.CGFloat
+  @objc public var step: Swift.Int
+  @objc deinit
+  @objc override dynamic public init()
+}
+@_inheritsConvenienceInitializers @objc public class ZHJMessageNoticeProcessor : TrusangBluetooth.ZHJBaseProcessor {
+  @objc public static let shared: TrusangBluetooth.ZHJMessageNoticeProcessor
+  public typealias MessageNoticeBlock = (TrusangBluetooth.ZHJMessageNotice) -> Swift.Void
+  @nonobjc override public init()
+  @objc public func readMessageNotice(messageNoticeHandle: @escaping TrusangBluetooth.ZHJMessageNoticeProcessor.MessageNoticeBlock)
+  @objc public func writeMessageNotice(_ notice: TrusangBluetooth.ZHJMessageNotice, setHandle: @escaping TrusangBluetooth.ZHJMessageNoticeProcessor.SetReturn)
+  @objc deinit
+}
+@_inheritsConvenienceInitializers @objc public class ZHJDial : ObjectiveC.NSObject {
+  @objc public var image: UIKit.UIImage?
+  @objc public var imageUrl: Swift.String
+  @objc public var templateImage: UIKit.UIImage?
+  @objc public var templateUrl: Swift.String
+  @objc public var id: Swift.Int
+  @objc public var type: Swift.Int
+  @objc public var format: Swift.Int
+  @objc public var imageSize: CoreGraphics.CGSize
+  @objc public var isSelected: Swift.Bool
+  @objc deinit
+  @objc override dynamic public init()
+}
+@_inheritsConvenienceInitializers @objc public class ZHJAlarmClock : ObjectiveC.NSObject {
+  @objc public var isOpen: Swift.Bool
+  @objc public var hour: Swift.Int
+  @objc public var minute: Swift.Int
+  @objc public var type: TrusangBluetooth.ZHJAlarmClockType
+  @objc public var cycle: [Swift.Bool]
+  @objc public var isValid: Swift.Bool
+  @objc deinit
+  @objc override dynamic public init()
+}
+@_inheritsConvenienceInitializers @objc public class ZHJTemperature : TrusangBluetooth.ZHJDeviceDataBaseModel {
+  @objc public var max: Swift.Int
+  @objc public var min: Swift.Int
+  @objc public var avg: Swift.Int
+  @objc public var details: [TrusangBluetooth.ZHJTemperatureDetail]
+  @objc override dynamic public init()
+  @objc deinit
+}
+@_inheritsConvenienceInitializers @objc public class ZHJTemperatureDetail : ObjectiveC.NSObject {
+  @objc public var dateTime: Swift.String
+  @objc public var wristTemperature: Swift.Int
+  @objc public var headTemperature: Swift.Int
+  @objc override dynamic public init()
+  @objc deinit
+}
+@_inheritsConvenienceInitializers @objc public class ZHJHeartRate : TrusangBluetooth.ZHJDeviceDataBaseModel {
+  @objc public var max: Swift.Int
+  @objc public var min: Swift.Int
+  @objc public var avg: Swift.Int
+  @objc public var details: [TrusangBluetooth.ZHJHeartRateDetail]
+  @objc deinit
+  @objc override dynamic public init()
+}
+@_inheritsConvenienceInitializers @objc public class ZHJHeartRateDetail : ObjectiveC.NSObject {
+  @objc public var dateTime: Swift.String
+  @objc public var HR: Swift.Int
+  @objc deinit
+  @objc override dynamic public init()
+}
+@_inheritsConvenienceInitializers @objc public class ZHJSyncTimeProcessor : TrusangBluetooth.ZHJBaseProcessor {
+  @objc public static let shared: TrusangBluetooth.ZHJSyncTimeProcessor
+  public typealias SyncTimeBlock = (TrusangBluetooth.ZHJSyncTime) -> Swift.Void
+  @nonobjc override public init()
+  @objc public func readDeviceTime(syncTimeHandle: @escaping TrusangBluetooth.ZHJSyncTimeProcessor.SyncTimeBlock)
+  @objc public func writeTime(_ time: TrusangBluetooth.ZHJSyncTime, setHandle: @escaping TrusangBluetooth.ZHJSyncTimeProcessor.SetReturn)
+  @objc deinit
+}
+@_inheritsConvenienceInitializers @objc public class ZHJSportConfig : ObjectiveC.NSObject {
+  @objc public var walk: Swift.Bool
+  @objc public var run: Swift.Bool
+  @objc public var swim: Swift.Bool
+  @objc public var ride: Swift.Bool
+  @objc public var indoorRun: Swift.Bool
+  @objc public var freeTrain: Swift.Bool
+  @objc public var football: Swift.Bool
+  @objc public var basketball: Swift.Bool
+  @objc public var badminton: Swift.Bool
+  @objc public var ropeSkip: Swift.Bool
+  @objc public var pushUps: Swift.Bool
+  @objc public var sitUps: Swift.Bool
+  @objc public var climb: Swift.Bool
+  @objc public var tennis: Swift.Bool
+  @objc public var HIT: Swift.Bool
+  @objc public var indoorBike: Swift.Bool
+  @objc public var fitness: Swift.Bool
+  @objc public var rugby: Swift.Bool
+  @objc public var golf: Swift.Bool
+  @objc public var happyBike: Swift.Bool
+  @objc public var weightlift: Swift.Bool
+  @objc public var rollerSkate: Swift.Bool
+  @objc public var dance: Swift.Bool
+  @objc public var yoga: Swift.Bool
+  @objc public var indoorWalk: Swift.Bool
+  @objc public var onFoot: Swift.Bool
+  @objc deinit
+  @objc override dynamic public init()
+}
+@_inheritsConvenienceInitializers @objc public class ZHJAutoSleepTime : ObjectiveC.NSObject {
+  @objc public var isOpen: Swift.Bool
+  @objc public var beginHour: Swift.Int
+  @objc public var beginMinute: Swift.Int
+  @objc public var endHour: Swift.Int
+  @objc public var endMinute: Swift.Int
+  @objc public var cycle: [Swift.Bool]
+  @objc public var notDisturb: Swift.Bool
+  @objc deinit
+  @objc override dynamic public init()
+}
+@_inheritsConvenienceInitializers @objc public class ZHJUserInfoProcessor : TrusangBluetooth.ZHJBaseProcessor {
+  @objc public static let shared: TrusangBluetooth.ZHJUserInfoProcessor
+  public typealias UserInfoBlock = (TrusangBluetooth.ZHJUserInfo) -> Swift.Void
+  @nonobjc override public init()
+  @objc public func readUserInfo(userInfoHandle: @escaping TrusangBluetooth.ZHJUserInfoProcessor.UserInfoBlock)
+  @objc public func writeUserInfo(_ info: TrusangBluetooth.ZHJUserInfo, setHandle: @escaping TrusangBluetooth.ZHJUserInfoProcessor.SetReturn)
+  @objc deinit
+}
+extension Int {
+  public var toU8: Swift.UInt8 {
+    get
+  }
+  public var to8: Swift.Int8 {
+    get
+  }
+  public var toU16: Swift.UInt16 {
+    get
+  }
+  public var to16: Swift.Int16 {
+    get
+  }
+  public var toU32: Swift.UInt32 {
+    get
+  }
+  public var to32: Swift.Int32 {
+    get
+  }
+  public var toU64: Swift.UInt64 {
+    get
+  }
+  public var to64: Swift.Int64 {
+    get
+  }
+  public var toInt: Swift.Int {
+    get
+  }
+  public var toUInt: Swift.UInt {
+    get
+  }
+  public func mask(_ bits: Swift.Int, _ msb: Swift.Bool) -> Swift.Int
+  public static var size: Swift.Int {
+    get
+  }
+  public var b0: Swift.Int {
+    get
+  }
+  public func setb0(_ bit: Swift.Int) -> Swift.Int
+  public var b1: Swift.Int {
+    get
+  }
+  public func setb1(_ bit: Swift.Int) -> Swift.Int
+  public var b2: Swift.Int {
+    get
+  }
+  public func setb2(_ bit: Swift.Int) -> Swift.Int
+  public var b3: Swift.Int {
+    get
+  }
+  public func setb3(_ bit: Swift.Int) -> Swift.Int
+  public var b4: Swift.Int {
+    get
+  }
+  public func setb4(_ bit: Swift.Int) -> Swift.Int
+  public var b5: Swift.Int {
+    get
+  }
+  public func setb5(_ bit: Swift.Int) -> Swift.Int
+  public var b6: Swift.Int {
+    get
+  }
+  public func setb6(_ bit: Swift.Int) -> Swift.Int
+  public var b7: Swift.Int {
+    get
+  }
+  public func setb7(_ bit: Swift.Int) -> Swift.Int
+  public subscript(index: Swift.Int) -> Swift.Int {
+    get
+    set(newValue)
+  }
+}
+extension UInt {
+  public var toU8: Swift.UInt8 {
+    get
+  }
+  public var to8: Swift.Int8 {
+    get
+  }
+  public var toU16: Swift.UInt16 {
+    get
+  }
+  public var to16: Swift.Int16 {
+    get
+  }
+  public var toU32: Swift.UInt32 {
+    get
+  }
+  public var to32: Swift.Int32 {
+    get
+  }
+  public var toU64: Swift.UInt64 {
+    get
+  }
+  public var to64: Swift.Int64 {
+    get
+  }
+  public var toInt: Swift.Int {
+    get
+  }
+  public var toUInt: Swift.UInt {
+    get
+  }
+  public func mask(_ bits: Swift.UInt, _ msb: Swift.Bool) -> Swift.UInt
+  public static var size: Swift.Int {
+    get
+  }
+  public var b0: Swift.UInt {
+    get
+  }
+  public func setb0(_ bit: Swift.Int) -> Swift.UInt
+  public var b1: Swift.UInt {
+    get
+  }
+  public func setb1(_ bit: Swift.Int) -> Swift.UInt
+  public var b2: Swift.UInt {
+    get
+  }
+  public func setb2(_ bit: Swift.Int) -> Swift.UInt
+  public var b3: Swift.UInt {
+    get
+  }
+  public func setb3(_ bit: Swift.Int) -> Swift.UInt
+  public var b4: Swift.UInt {
+    get
+  }
+  public func setb4(_ bit: Swift.Int) -> Swift.UInt
+  public var b5: Swift.UInt {
+    get
+  }
+  public func setb5(_ bit: Swift.Int) -> Swift.UInt
+  public var b6: Swift.UInt {
+    get
+  }
+  public func setb6(_ bit: Swift.Int) -> Swift.UInt
+  public var b7: Swift.UInt {
+    get
+  }
+  public func setb7(_ bit: Swift.Int) -> Swift.UInt
+  public subscript(index: Swift.Int) -> Swift.UInt {
+    get
+    set(newValue)
+  }
+}
+extension Int8 {
+  public var toU8: Swift.UInt8 {
+    get
+  }
+  public var to8: Swift.Int8 {
+    get
+  }
+  public var toU16: Swift.UInt16 {
+    get
+  }
+  public var to16: Swift.Int16 {
+    get
+  }
+  public var toU32: Swift.UInt32 {
+    get
+  }
+  public var to32: Swift.Int32 {
+    get
+  }
+  public var toU64: Swift.UInt64 {
+    get
+  }
+  public var to64: Swift.Int64 {
+    get
+  }
+  public var toInt: Swift.Int {
+    get
+  }
+  public var toUInt: Swift.UInt {
+    get
+  }
+  public func mask(_ bits: Swift.Int8, _ msb: Swift.Bool) -> Swift.Int8
+  public static var size: Swift.Int {
+    get
+  }
+  public var b0: Swift.Int8 {
+    get
+  }
+  public func setb0(_ bit: Swift.Int) -> Swift.Int8
+  public var b1: Swift.Int8 {
+    get
+  }
+  public func setb1(_ bit: Swift.Int) -> Swift.Int8
+  public var b2: Swift.Int8 {
+    get
+  }
+  public func setb2(_ bit: Swift.Int) -> Swift.Int8
+  public var b3: Swift.Int8 {
+    get
+  }
+  public func setb3(_ bit: Swift.Int) -> Swift.Int8
+  public var b4: Swift.Int8 {
+    get
+  }
+  public func setb4(_ bit: Swift.Int) -> Swift.Int8
+  public var b5: Swift.Int8 {
+    get
+  }
+  public func setb5(_ bit: Swift.Int) -> Swift.Int8
+  public var b6: Swift.Int8 {
+    get
+  }
+  public func setb6(_ bit: Swift.Int) -> Swift.Int8
+  public var b7: Swift.Int8 {
+    get
+  }
+  public func setb7(_ bit: Swift.Int) -> Swift.Int8
+  public subscript(index: Swift.Int) -> Swift.Int8 {
+    get
+    set(newValue)
+  }
+}
+extension UInt8 {
+  public var toU8: Swift.UInt8 {
+    get
+  }
+  public var to8: Swift.Int8 {
+    get
+  }
+  public var toU16: Swift.UInt16 {
+    get
+  }
+  public var to16: Swift.Int16 {
+    get
+  }
+  public var toU32: Swift.UInt32 {
+    get
+  }
+  public var to32: Swift.Int32 {
+    get
+  }
+  public var toU64: Swift.UInt64 {
+    get
+  }
+  public var to64: Swift.Int64 {
+    get
+  }
+  public var toInt: Swift.Int {
+    get
+  }
+  public var toUInt: Swift.UInt {
+    get
+  }
+  public func mask(_ bits: Swift.UInt8, _ msb: Swift.Bool) -> Swift.UInt8
+  public static var size: Swift.Int {
+    get
+  }
+  public var b0: Swift.UInt8 {
+    get
+  }
+  public func setb0(_ bit: Swift.Int) -> Swift.UInt8
+  public var b1: Swift.UInt8 {
+    get
+  }
+  public func setb1(_ bit: Swift.Int) -> Swift.UInt8
+  public var b2: Swift.UInt8 {
+    get
+  }
+  public func setb2(_ bit: Swift.Int) -> Swift.UInt8
+  public var b3: Swift.UInt8 {
+    get
+  }
+  public func setb3(_ bit: Swift.Int) -> Swift.UInt8
+  public var b4: Swift.UInt8 {
+    get
+  }
+  public func setb4(_ bit: Swift.Int) -> Swift.UInt8
+  public var b5: Swift.UInt8 {
+    get
+  }
+  public func setb5(_ bit: Swift.Int) -> Swift.UInt8
+  public var b6: Swift.UInt8 {
+    get
+  }
+  public func setb6(_ bit: Swift.Int) -> Swift.UInt8
+  public var b7: Swift.UInt8 {
+    get
+  }
+  public func setb7(_ bit: Swift.Int) -> Swift.UInt8
+  public subscript(index: Swift.Int) -> Swift.UInt8 {
+    get
+    set(newValue)
+  }
+}
+extension Int16 {
+  public var toU8: Swift.UInt8 {
+    get
+  }
+  public var to8: Swift.Int8 {
+    get
+  }
+  public var toU16: Swift.UInt16 {
+    get
+  }
+  public var to16: Swift.Int16 {
+    get
+  }
+  public var toU32: Swift.UInt32 {
+    get
+  }
+  public var to32: Swift.Int32 {
+    get
+  }
+  public var toU64: Swift.UInt64 {
+    get
+  }
+  public var to64: Swift.Int64 {
+    get
+  }
+  public var toInt: Swift.Int {
+    get
+  }
+  public var toUInt: Swift.UInt {
+    get
+  }
+  public func mask(_ bits: Swift.Int16, _ msb: Swift.Bool) -> Swift.Int16
+  public static var size: Swift.Int {
+    get
+  }
+  public var b0: Swift.Int16 {
+    get
+  }
+  public func setb0(_ bit: Swift.Int) -> Swift.Int16
+  public var b1: Swift.Int16 {
+    get
+  }
+  public func setb1(_ bit: Swift.Int) -> Swift.Int16
+  public var b2: Swift.Int16 {
+    get
+  }
+  public func setb2(_ bit: Swift.Int) -> Swift.Int16
+  public var b3: Swift.Int16 {
+    get
+  }
+  public func setb3(_ bit: Swift.Int) -> Swift.Int16
+  public var b4: Swift.Int16 {
+    get
+  }
+  public func setb4(_ bit: Swift.Int) -> Swift.Int16
+  public var b5: Swift.Int16 {
+    get
+  }
+  public func setb5(_ bit: Swift.Int) -> Swift.Int16
+  public var b6: Swift.Int16 {
+    get
+  }
+  public func setb6(_ bit: Swift.Int) -> Swift.Int16
+  public var b7: Swift.Int16 {
+    get
+  }
+  public func setb7(_ bit: Swift.Int) -> Swift.Int16
+  public subscript(index: Swift.Int) -> Swift.Int16 {
+    get
+    set(newValue)
+  }
+}
+extension UInt16 {
+  public var toU8: Swift.UInt8 {
+    get
+  }
+  public var to8: Swift.Int8 {
+    get
+  }
+  public var toU16: Swift.UInt16 {
+    get
+  }
+  public var to16: Swift.Int16 {
+    get
+  }
+  public var toU32: Swift.UInt32 {
+    get
+  }
+  public var to32: Swift.Int32 {
+    get
+  }
+  public var toU64: Swift.UInt64 {
+    get
+  }
+  public var to64: Swift.Int64 {
+    get
+  }
+  public var toInt: Swift.Int {
+    get
+  }
+  public var toUInt: Swift.UInt {
+    get
+  }
+  public func mask(_ bits: Swift.UInt16, _ msb: Swift.Bool) -> Swift.UInt16
+  public static var size: Swift.Int {
+    get
+  }
+  public var b0: Swift.UInt16 {
+    get
+  }
+  public func setb0(_ bit: Swift.Int) -> Swift.UInt16
+  public var b1: Swift.UInt16 {
+    get
+  }
+  public func setb1(_ bit: Swift.Int) -> Swift.UInt16
+  public var b2: Swift.UInt16 {
+    get
+  }
+  public func setb2(_ bit: Swift.Int) -> Swift.UInt16
+  public var b3: Swift.UInt16 {
+    get
+  }
+  public func setb3(_ bit: Swift.Int) -> Swift.UInt16
+  public var b4: Swift.UInt16 {
+    get
+  }
+  public func setb4(_ bit: Swift.Int) -> Swift.UInt16
+  public var b5: Swift.UInt16 {
+    get
+  }
+  public func setb5(_ bit: Swift.Int) -> Swift.UInt16
+  public var b6: Swift.UInt16 {
+    get
+  }
+  public func setb6(_ bit: Swift.Int) -> Swift.UInt16
+  public var b7: Swift.UInt16 {
+    get
+  }
+  public func setb7(_ bit: Swift.Int) -> Swift.UInt16
+  public subscript(index: Swift.Int) -> Swift.UInt16 {
+    get
+    set(newValue)
+  }
+}
+extension Int32 {
+  public var toU8: Swift.UInt8 {
+    get
+  }
+  public var to8: Swift.Int8 {
+    get
+  }
+  public var toU16: Swift.UInt16 {
+    get
+  }
+  public var to16: Swift.Int16 {
+    get
+  }
+  public var toU32: Swift.UInt32 {
+    get
+  }
+  public var to32: Swift.Int32 {
+    get
+  }
+  public var toU64: Swift.UInt64 {
+    get
+  }
+  public var to64: Swift.Int64 {
+    get
+  }
+  public var toInt: Swift.Int {
+    get
+  }
+  public var toUInt: Swift.UInt {
+    get
+  }
+  public func mask(_ bits: Swift.Int32, _ msb: Swift.Bool) -> Swift.Int32
+  public static var size: Swift.Int {
+    get
+  }
+  public var b0: Swift.Int32 {
+    get
+  }
+  public func setb0(_ bit: Swift.Int) -> Swift.Int32
+  public var b1: Swift.Int32 {
+    get
+  }
+  public func setb1(_ bit: Swift.Int) -> Swift.Int32
+  public var b2: Swift.Int32 {
+    get
+  }
+  public func setb2(_ bit: Swift.Int) -> Swift.Int32
+  public var b3: Swift.Int32 {
+    get
+  }
+  public func setb3(_ bit: Swift.Int) -> Swift.Int32
+  public var b4: Swift.Int32 {
+    get
+  }
+  public func setb4(_ bit: Swift.Int) -> Swift.Int32
+  public var b5: Swift.Int32 {
+    get
+  }
+  public func setb5(_ bit: Swift.Int) -> Swift.Int32
+  public var b6: Swift.Int32 {
+    get
+  }
+  public func setb6(_ bit: Swift.Int) -> Swift.Int32
+  public var b7: Swift.Int32 {
+    get
+  }
+  public func setb7(_ bit: Swift.Int) -> Swift.Int32
+  public subscript(index: Swift.Int) -> Swift.Int32 {
+    get
+    set(newValue)
+  }
+}
+extension UInt32 {
+  public var toU8: Swift.UInt8 {
+    get
+  }
+  public var to8: Swift.Int8 {
+    get
+  }
+  public var toU16: Swift.UInt16 {
+    get
+  }
+  public var to16: Swift.Int16 {
+    get
+  }
+  public var toU32: Swift.UInt32 {
+    get
+  }
+  public var to32: Swift.Int32 {
+    get
+  }
+  public var toU64: Swift.UInt64 {
+    get
+  }
+  public var to64: Swift.Int64 {
+    get
+  }
+  public var toInt: Swift.Int {
+    get
+  }
+  public var toUInt: Swift.UInt {
+    get
+  }
+  public func mask(_ bits: Swift.UInt32, _ msb: Swift.Bool) -> Swift.UInt32
+  public static var size: Swift.Int {
+    get
+  }
+  public var b0: Swift.UInt32 {
+    get
+  }
+  public func setb0(_ bit: Swift.Int) -> Swift.UInt32
+  public var b1: Swift.UInt32 {
+    get
+  }
+  public func setb1(_ bit: Swift.Int) -> Swift.UInt32
+  public var b2: Swift.UInt32 {
+    get
+  }
+  public func setb2(_ bit: Swift.Int) -> Swift.UInt32
+  public var b3: Swift.UInt32 {
+    get
+  }
+  public func setb3(_ bit: Swift.Int) -> Swift.UInt32
+  public var b4: Swift.UInt32 {
+    get
+  }
+  public func setb4(_ bit: Swift.Int) -> Swift.UInt32
+  public var b5: Swift.UInt32 {
+    get
+  }
+  public func setb5(_ bit: Swift.Int) -> Swift.UInt32
+  public var b6: Swift.UInt32 {
+    get
+  }
+  public func setb6(_ bit: Swift.Int) -> Swift.UInt32
+  public var b7: Swift.UInt32 {
+    get
+  }
+  public func setb7(_ bit: Swift.Int) -> Swift.UInt32
+  public subscript(index: Swift.Int) -> Swift.UInt32 {
+    get
+    set(newValue)
+  }
+}
+extension Int64 {
+  public var toU8: Swift.UInt8 {
+    get
+  }
+  public var to8: Swift.Int8 {
+    get
+  }
+  public var toU16: Swift.UInt16 {
+    get
+  }
+  public var to16: Swift.Int16 {
+    get
+  }
+  public var toU32: Swift.UInt32 {
+    get
+  }
+  public var to32: Swift.Int32 {
+    get
+  }
+  public var toU64: Swift.UInt64 {
+    get
+  }
+  public var to64: Swift.Int64 {
+    get
+  }
+  public var toInt: Swift.Int {
+    get
+  }
+  public var toUInt: Swift.UInt {
+    get
+  }
+  public func mask(_ bits: Swift.Int64, _ msb: Swift.Bool) -> Swift.Int64
+  public static var size: Swift.Int {
+    get
+  }
+  public var b0: Swift.Int64 {
+    get
+  }
+  public func setb0(_ bit: Swift.Int) -> Swift.Int64
+  public var b1: Swift.Int64 {
+    get
+  }
+  public func setb1(_ bit: Swift.Int) -> Swift.Int64
+  public var b2: Swift.Int64 {
+    get
+  }
+  public func setb2(_ bit: Swift.Int) -> Swift.Int64
+  public var b3: Swift.Int64 {
+    get
+  }
+  public func setb3(_ bit: Swift.Int) -> Swift.Int64
+  public var b4: Swift.Int64 {
+    get
+  }
+  public func setb4(_ bit: Swift.Int) -> Swift.Int64
+  public var b5: Swift.Int64 {
+    get
+  }
+  public func setb5(_ bit: Swift.Int) -> Swift.Int64
+  public var b6: Swift.Int64 {
+    get
+  }
+  public func setb6(_ bit: Swift.Int) -> Swift.Int64
+  public var b7: Swift.Int64 {
+    get
+  }
+  public func setb7(_ bit: Swift.Int) -> Swift.Int64
+  public subscript(index: Swift.Int) -> Swift.Int64 {
+    get
+    set(newValue)
+  }
+}
+extension UInt64 {
+  public var toU8: Swift.UInt8 {
+    get
+  }
+  public var to8: Swift.Int8 {
+    get
+  }
+  public var toU16: Swift.UInt16 {
+    get
+  }
+  public var to16: Swift.Int16 {
+    get
+  }
+  public var toU32: Swift.UInt32 {
+    get
+  }
+  public var to32: Swift.Int32 {
+    get
+  }
+  public var toU64: Swift.UInt64 {
+    get
+  }
+  public var to64: Swift.Int64 {
+    get
+  }
+  public var toInt: Swift.Int {
+    get
+  }
+  public var toUInt: Swift.UInt {
+    get
+  }
+  public func mask(_ bits: Swift.UInt64, _ msb: Swift.Bool) -> Swift.UInt64
+  public static var size: Swift.Int {
+    get
+  }
+  public var b0: Swift.UInt64 {
+    get
+  }
+  public func setb0(_ bit: Swift.Int) -> Swift.UInt64
+  public var b1: Swift.UInt64 {
+    get
+  }
+  public func setb1(_ bit: Swift.Int) -> Swift.UInt64
+  public var b2: Swift.UInt64 {
+    get
+  }
+  public func setb2(_ bit: Swift.Int) -> Swift.UInt64
+  public var b3: Swift.UInt64 {
+    get
+  }
+  public func setb3(_ bit: Swift.Int) -> Swift.UInt64
+  public var b4: Swift.UInt64 {
+    get
+  }
+  public func setb4(_ bit: Swift.Int) -> Swift.UInt64
+  public var b5: Swift.UInt64 {
+    get
+  }
+  public func setb5(_ bit: Swift.Int) -> Swift.UInt64
+  public var b6: Swift.UInt64 {
+    get
+  }
+  public func setb6(_ bit: Swift.Int) -> Swift.UInt64
+  public var b7: Swift.UInt64 {
+    get
+  }
+  public func setb7(_ bit: Swift.Int) -> Swift.UInt64
+  public subscript(index: Swift.Int) -> Swift.UInt64 {
+    get
+    set(newValue)
+  }
+}
+prefix operator ~~
+@_inheritsConvenienceInitializers @objc public class ZHJPairingCodeProcessor : TrusangBluetooth.ZHJBaseProcessor {
+  @objc public static let shared: TrusangBluetooth.ZHJPairingCodeProcessor
+  public typealias PairResultBlock = (TrusangBluetooth.ZHJBLEError) -> Swift.Void
+  @nonobjc override public init()
+  @objc public func sendPairingCode(pairResult: @escaping TrusangBluetooth.ZHJPairingCodeProcessor.PairResultBlock) -> Swift.String
+  @objc public func closePairingCodeUI(pairCodeError: Swift.Bool, setHandle: @escaping TrusangBluetooth.ZHJPairingCodeProcessor.SetReturn)
+  @objc deinit
+}
+@_inheritsConvenienceInitializers @objc public class ZHJSportModeProcessor : TrusangBluetooth.ZHJBaseProcessor {
+  @objc public static let shared: TrusangBluetooth.ZHJSportModeProcessor
+  public typealias SportModeBlock = (TrusangBluetooth.ZHJSportMode?) -> Swift.Void
+  @nonobjc override public init()
+  @objc public func clearSportModeRecord(clearHandle: @escaping TrusangBluetooth.ZHJSportModeProcessor.SetReturn)
+  @objc public func readSportModeHistoryRecord(sportModeHandle: @escaping TrusangBluetooth.ZHJSportModeProcessor.SportModeBlock, historyDoneHandle: @escaping TrusangBluetooth.ZHJSportModeProcessor.ProcessorReturn)
+  @objc deinit
+}
+@_inheritsConvenienceInitializers @objc public class ZHJMessageProcessor : TrusangBluetooth.ZHJBaseProcessor {
+  @objc public static let shared: TrusangBluetooth.ZHJMessageProcessor
+  @nonobjc override public init()
+  @objc public func sendMessage(message: Swift.String, setHandle: @escaping TrusangBluetooth.ZHJMessageProcessor.SetReturn)
+  @objc public func sendVibrate()
+  @objc deinit
+}
+@_inheritsConvenienceInitializers @objc public class ZHJAutoSleepTimeProcessor : TrusangBluetooth.ZHJBaseProcessor {
+  @objc public static let shared: TrusangBluetooth.ZHJAutoSleepTimeProcessor
+  public typealias AutoSleepTimeBlock = ([TrusangBluetooth.ZHJAutoSleepTime]) -> Swift.Void
+  @nonobjc override public init()
+  @objc public func readAutoSleepTime(autoSleepTimeHandle: @escaping TrusangBluetooth.ZHJAutoSleepTimeProcessor.AutoSleepTimeBlock)
+  @objc public func writeSleepSetting(_ autoSleepTimes: [TrusangBluetooth.ZHJAutoSleepTime], setHandle: @escaping TrusangBluetooth.ZHJAutoSleepTimeProcessor.SetReturn)
+  @objc deinit
+}
+@_inheritsConvenienceInitializers @objc public class ZHJClearDeviceProcessor : TrusangBluetooth.ZHJBaseProcessor {
+  @objc public static let shared: TrusangBluetooth.ZHJClearDeviceProcessor
+  @nonobjc override public init()
+  @objc public func clearAllSportRecord(clearHandle: @escaping TrusangBluetooth.ZHJClearDeviceProcessor.SetReturn)
+  @objc public func resetDevice(resetHandle: @escaping TrusangBluetooth.ZHJClearDeviceProcessor.SetReturn)
+  @objc public func rebootDevice(rebootHandle: @escaping TrusangBluetooth.ZHJClearDeviceProcessor.SetReturn)
+  @objc deinit
+}
+@_inheritsConvenienceInitializers @objc public class ZHJBatteryProcessor : TrusangBluetooth.ZHJBaseProcessor {
+  @objc public static let shared: TrusangBluetooth.ZHJBatteryProcessor
+  public typealias BatteryBlock = (Swift.Int) -> Swift.Void
+  @nonobjc override public init()
+  @objc public func readBatteryPower(batteryHandle: @escaping TrusangBluetooth.ZHJBatteryProcessor.BatteryBlock)
+  @objc deinit
+}
+@_inheritsConvenienceInitializers @objc public class ZHJBloodPressure : TrusangBluetooth.ZHJDeviceDataBaseModel {
+  @objc public var max: TrusangBluetooth.ZHJBloodPressureDetail
+  @objc public var min: TrusangBluetooth.ZHJBloodPressureDetail
+  @objc public var avg: TrusangBluetooth.ZHJBloodPressureDetail
+  @objc public var details: [TrusangBluetooth.ZHJBloodPressureDetail]
+  @objc deinit
+  @objc override dynamic public init()
+}
+@_inheritsConvenienceInitializers @objc public class ZHJBloodPressureDetail : ObjectiveC.NSObject {
+  @objc public var dateTime: Swift.String
+  @objc public var DBP: Swift.Int
+  @objc public var SBP: Swift.Int
+  @objc override dynamic public init()
+  @objc deinit
+}
+@_inheritsConvenienceInitializers @objc public class ZHJDeviceFeatureProcessor : TrusangBluetooth.ZHJBaseProcessor {
+  @objc public static let shared: TrusangBluetooth.ZHJDeviceFeatureProcessor
+  public typealias SportConfigBlock = (TrusangBluetooth.ZHJSportConfig) -> Swift.Void
+  @nonobjc override public init()
+  @objc public func readSportConfig(sportConfigHandle: @escaping TrusangBluetooth.ZHJDeviceFeatureProcessor.SportConfigBlock)
+  @objc public func writeSportConfig(sportConfig: TrusangBluetooth.ZHJSportConfig, setHandle: @escaping TrusangBluetooth.ZHJDeviceFeatureProcessor.SetReturn)
+  @objc deinit
+}
+@_inheritsConvenienceInitializers @objc public class ZHJSportTargetProcessor : TrusangBluetooth.ZHJBaseProcessor {
+  @objc public static let shared: TrusangBluetooth.ZHJSportTargetProcessor
+  public typealias SportTargetBlock = (TrusangBluetooth.ZHJSportTarget) -> Swift.Void
+  @nonobjc override public init()
+  @objc public func readSportTarget(sportTargetHandle: @escaping TrusangBluetooth.ZHJSportTargetProcessor.SportTargetBlock)
+  @objc public func writeSportTarget(_ target: TrusangBluetooth.ZHJSportTarget, setHandle: @escaping TrusangBluetooth.ZHJSportTargetProcessor.SetReturn)
+  @objc deinit
+}
+@_inheritsConvenienceInitializers @objc public class ZHJSedentary : ObjectiveC.NSObject {
+  @objc public var isOpen: Swift.Bool
+  @objc public var beginTime: Swift.Int
+  @objc public var endTime: Swift.Int
+  @objc public var cycle: [Swift.Bool]
+  @objc public var intervals: Swift.Int
+  @objc deinit
+  @objc override dynamic public init()
+}
+@_inheritsConvenienceInitializers @objc public class ZHJSedentaryProcessor : TrusangBluetooth.ZHJBaseProcessor {
+  @objc public static let shared: TrusangBluetooth.ZHJSedentaryProcessor
+  public typealias SedentaryBlock = (TrusangBluetooth.ZHJSedentary) -> Swift.Void
+  @nonobjc override public init()
+  @objc public func readSedentary(sedentaryHandle: @escaping TrusangBluetooth.ZHJSedentaryProcessor.SedentaryBlock)
+  @objc public func writeSedentary(_ sedentary: TrusangBluetooth.ZHJSedentary, setHandle: @escaping TrusangBluetooth.ZHJSedentaryProcessor.SetReturn)
+  @objc deinit
+}
+@_inheritsConvenienceInitializers @objc public class ZHJDrinkWaterConfig : ObjectiveC.NSObject {
+  @objc public var reminderArray: [TrusangBluetooth.ZHJTime]
+  @objc public var reminderSwitch: Swift.Bool
+  @objc public var target: Swift.Int
+  @objc deinit
+  @objc override dynamic public init()
+}
+@_inheritsConvenienceInitializers @objc public class ZHJTime : ObjectiveC.NSObject {
+  @objc public var year: Swift.Int
+  @objc public var month: Swift.Int
+  @objc public var day: Swift.Int
+  @objc public var hour: Swift.Int
+  @objc public var minute: Swift.Int
+  @objc deinit
+  @objc override dynamic public init()
+}
+@_inheritsConvenienceInitializers @objc public class ZHJDialProcessor : TrusangBluetooth.ZHJBaseProcessor {
+  public static let shared: TrusangBluetooth.ZHJDialProcessor
+  public typealias DialSendProgress = (Swift.Double) -> Swift.Void
+  public typealias DialSendSuccess = () -> Swift.Void
+  public typealias DialSendFail = () -> Swift.Void
+  @nonobjc override public init()
+  @objc public func sendDial(dial: TrusangBluetooth.ZHJDial, progress: @escaping TrusangBluetooth.ZHJDialProcessor.DialSendProgress, success: @escaping TrusangBluetooth.ZHJDialProcessor.DialSendSuccess, fail: @escaping TrusangBluetooth.ZHJDialProcessor.DialSendFail)
+  @objc public func dataDidReceived(notification: Foundation.NSNotification)
+  @objc deinit
+}
+extension UIImage {
+  @objc dynamic public func extraPixels(in size: CoreGraphics.CGSize) -> [Swift.UInt32]?
+  @objc dynamic public func convertRGB565(size: CoreGraphics.CGSize) -> Foundation.Data
+}
+@_inheritsConvenienceInitializers @objc public class ZHJBaseProcessor : ObjectiveC.NSObject {
+  public typealias SetReturn = (TrusangBluetooth.ZHJBLEError) -> Swift.Void
+  public typealias ProcessorReturn = (Any) -> Swift.Void
+  @nonobjc override public init()
+  @objc deinit
+}
+@_inheritsConvenienceInitializers @objc public class ZHJHealthDataAlarm : ObjectiveC.NSObject {
+  @objc public var type: TrusangBluetooth.HealthDataAlarmType
+  @objc public var value: Swift.Int
+  @objc deinit
+  @objc override dynamic public init()
+}
+@_inheritsConvenienceInitializers @objc public class ZHJHR_BP_BOProcessor : TrusangBluetooth.ZHJBaseProcessor {
+  @objc public static let shared: TrusangBluetooth.ZHJHR_BP_BOProcessor
+  public typealias HistoryDataBlock = (TrusangBluetooth.ZHJHeartRate, TrusangBluetooth.ZHJBloodPressure, TrusangBluetooth.ZHJBloodOxygen) -> Swift.Void
+  public typealias CurrentDataBlock = (TrusangBluetooth.ZHJHeartRateDetail, TrusangBluetooth.ZHJBloodPressureDetail, TrusangBluetooth.ZHJBloodOxygenDetail) -> Swift.Void
+  public typealias HRTimingDetectBlock = (TrusangBluetooth.ZHJHRTimingDetect_t) -> Swift.Void
+  public typealias HRAlarmBlock = (TrusangBluetooth.ZHJHRAlarm_t) -> Swift.Void
+  public typealias HR_BP_BOAlarmBlock = (TrusangBluetooth.ZHJHRAlarm_t, TrusangBluetooth.ZHJBPAlarm_t, TrusangBluetooth.ZHJBOAlarm_t) -> Swift.Void
+  public typealias HR_BP_BOCalibrationBlock = (Swift.Int, Swift.Int, Swift.Int, Swift.Int) -> Swift.Void
+  @nonobjc override public init()
+  @objc public func clearHR_BP_BORecord(clearHandle: @escaping TrusangBluetooth.ZHJHR_BP_BOProcessor.SetReturn)
+  @objc public func setHeartRateAlarmLimit(maxHR: Swift.Int, minHR: Swift.Int, isOn: Swift.Bool, setHandle: @escaping TrusangBluetooth.ZHJHR_BP_BOProcessor.SetReturn)
+  @objc public func setHR_BP_BOAlarmLimit(HRAlarm: TrusangBluetooth.ZHJHRAlarm_t, BPAlarm: TrusangBluetooth.ZHJBPAlarm_t, BOAlarm: TrusangBluetooth.ZHJBOAlarm_t, setHandle: @escaping TrusangBluetooth.ZHJHR_BP_BOProcessor.SetReturn)
+  @objc public func setAutoDetectHeartRate(interval: Swift.Int, isOn: Swift.Bool, setHandle: @escaping TrusangBluetooth.ZHJHR_BP_BOProcessor.SetReturn)
+  @objc public func startDetectHeartRate(setHandle: @escaping TrusangBluetooth.ZHJHR_BP_BOProcessor.SetReturn)
+  @objc public func endDetectHeartRate(setHandle: @escaping TrusangBluetooth.ZHJHR_BP_BOProcessor.SetReturn)
+  @objc public func readCurrentHR_BP_BO(currentDataHandle: @escaping TrusangBluetooth.ZHJHR_BP_BOProcessor.CurrentDataBlock)
+  @objc public func readHeartAlarmSetting(HRAlarmHandle: @escaping TrusangBluetooth.ZHJHR_BP_BOProcessor.HRAlarmBlock)
+  @objc public func readHR_BP_BOAlarmSetting(alarmHandle: @escaping TrusangBluetooth.ZHJHR_BP_BOProcessor.HR_BP_BOAlarmBlock)
+  @objc public func readHeartTimingDetectSetting(HRTimingDetectHandle: @escaping TrusangBluetooth.ZHJHR_BP_BOProcessor.HRTimingDetectBlock)
+  @objc public func setHR_BP_BOCalibration(HR: Swift.Int, DBP: Swift.Int, SBP: Swift.Int, BO: Swift.Int, setHandle: @escaping TrusangBluetooth.ZHJHR_BP_BOProcessor.SetReturn)
+  @objc public func readHR_BP_BOCalibration(HR_BP_BOCalibrationHandle: @escaping TrusangBluetooth.ZHJHR_BP_BOProcessor.HR_BP_BOCalibrationBlock)
+  @objc public func readHR_BP_BOHistoryRecord(_ date: Swift.String, historyDataHandle: @escaping TrusangBluetooth.ZHJHR_BP_BOProcessor.HistoryDataBlock, historyDoneHandle: @escaping TrusangBluetooth.ZHJHR_BP_BOProcessor.ProcessorReturn)
+  @objc deinit
+}
+@_inheritsConvenienceInitializers @objc public class ZHJDeviceConfigProcessor : TrusangBluetooth.ZHJBaseProcessor {
+  @objc public static let shared: TrusangBluetooth.ZHJDeviceConfigProcessor
+  public typealias DeviceConfigBlock = (TrusangBluetooth.ZHJDeviceConfig) -> Swift.Void
+  @nonobjc override public init()
+  @objc public func readDeviceConfig(deviceConfigHandle: @escaping TrusangBluetooth.ZHJDeviceConfigProcessor.DeviceConfigBlock)
+  @objc public func writeDeviceConfig(_ config: TrusangBluetooth.ZHJDeviceConfig, setHandle: @escaping TrusangBluetooth.ZHJDeviceConfigProcessor.SetReturn)
+  @objc deinit
+}
+@objc public enum ECGResult : Swift.Int {
+  case ROT = 3
+  case CPT = 6
+  case VPB = 7
+  case BGM = 8
+  case TGM = 9
+  case TAC = 10
+  case BRD = 11
+  case MIS = 16
+  case OK = 100
+  public typealias RawValue = Swift.Int
+  public init?(rawValue: Swift.Int)
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+@_inheritsConvenienceInitializers @objc public class ZHJECG : TrusangBluetooth.ZHJDeviceDataBaseModel {
+  @objc public var HR: Swift.Int
+  @objc public var ecgValues: [CoreGraphics.CGFloat]
+  @objc public var gain: CoreGraphics.CGFloat
+  @objc public var speed: CoreGraphics.CGFloat
+  @objc public var results: [Swift.Int]
+  @objc override dynamic public init()
+  @objc deinit
+}
+extension ZHJECG {
+  @objc dynamic public func isException() -> Swift.Bool
+}
+@_inheritsConvenienceInitializers @objc public class ZHJDeviceControlProcessor : TrusangBluetooth.ZHJBaseProcessor {
+  @objc public static let shared: TrusangBluetooth.ZHJDeviceControlProcessor
+  public typealias TakePhotoContrlBlock = (ObjectiveC.NSInteger) -> Swift.Void
+  public typealias MusicContrlBlock = (ObjectiveC.NSInteger) -> Swift.Void
+  public typealias FindContrlBlock = (ObjectiveC.NSInteger) -> Swift.Void
+  @nonobjc override public init()
+  @objc public func readDeviceControlRealTimeData(takePhotoContrlHandle: @escaping TrusangBluetooth.ZHJDeviceControlProcessor.TakePhotoContrlBlock, musicContrlHandle: @escaping TrusangBluetooth.ZHJDeviceControlProcessor.MusicContrlBlock, findContrlHandle: @escaping TrusangBluetooth.ZHJDeviceControlProcessor.FindContrlBlock)
+  @objc public func findDevice(writeHandle: @escaping TrusangBluetooth.ZHJDeviceControlProcessor.SetReturn)
+  @objc public func takePhoto(writeHandle: @escaping TrusangBluetooth.ZHJDeviceControlProcessor.SetReturn)
+  @objc public func takePhotoCancel(writeHandle: @escaping TrusangBluetooth.ZHJDeviceControlProcessor.SetReturn)
+  @objc deinit
+}
+@_inheritsConvenienceInitializers @objc public class ZHJUserInfo : ObjectiveC.NSObject {
+  @objc public var mac: Swift.String
+  @objc public var mid: Swift.Int
+  @objc public var sex: Swift.Int
+  @objc public var age: Swift.Int
+  @objc public var height: Swift.Int
+  @objc public var weight: Swift.Int
+  @objc public var heightDesc: Swift.String
+  @objc public var weightDesc: Swift.String
+  @objc public var birthday: Swift.String
+  @objc public var name: Swift.String
+  @objc public var unit: Swift.Int
+  @objc override dynamic public init()
+  @objc deinit
+}
+@_inheritsConvenienceInitializers @objc public class ZHJDrinkWaterConfigProcessor : TrusangBluetooth.ZHJBaseProcessor {
+  @objc public static let shared: TrusangBluetooth.ZHJDrinkWaterConfigProcessor
+  public typealias DrinkWaterConfigBlock = (TrusangBluetooth.ZHJDrinkWaterConfig) -> Swift.Void
+  @nonobjc override public init()
+  @objc public func readDrinkWaterConfig(drinkWaterConfigHandle: @escaping TrusangBluetooth.ZHJDrinkWaterConfigProcessor.DrinkWaterConfigBlock)
+  @objc public func writeDrinkWaterConfig(drinkWaterConfig: TrusangBluetooth.ZHJDrinkWaterConfig, setHandle: @escaping TrusangBluetooth.ZHJDrinkWaterConfigProcessor.SetReturn)
+  @objc deinit
+}
+extension Data {
+  public var bytes: Swift.Array<Swift.UInt8> {
+    get
+  }
+  public func toHexString() -> Swift.String
+}
+public enum Bit : Swift.Int {
+  case zero
+  case one
+  public typealias RawValue = Swift.Int
+  public init?(rawValue: Swift.Int)
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+extension UInt8 {
+  public func bits() -> [TrusangBluetooth.Bit]
+  public func bits() -> Swift.String
+}
+extension Array {
+  public init(reserveCapacity: Swift.Int)
+}
+extension Array where Element == Swift.UInt8 {
+  public init(hex: Swift.String)
+  public func toHexString() -> Swift.String
+}
+@_inheritsConvenienceInitializers @objc public class ZHJAlarmClockProcessor : TrusangBluetooth.ZHJBaseProcessor {
+  @objc public static let shared: TrusangBluetooth.ZHJAlarmClockProcessor
+  public typealias AlarmClockBlock = ([TrusangBluetooth.ZHJAlarmClock]) -> Swift.Void
+  @nonobjc override public init()
+  @objc public func readAlarmClock(alarmClockHandle: @escaping TrusangBluetooth.ZHJAlarmClockProcessor.AlarmClockBlock)
+  @objc public func writeAlarmClock(_ clocks: [TrusangBluetooth.ZHJAlarmClock], setHandle: @escaping TrusangBluetooth.ZHJAlarmClockProcessor.SetReturn)
+  @objc deinit
+}
+@objc public enum HealthDataAlarmType : Swift.Int {
+  case lowHR
+  case highHR
+  case lowDBP
+  case highDBP
+  case lowSBP
+  case highSBP
+  case lowBO
+  case highTEMP
+  public typealias RawValue = Swift.Int
+  public init?(rawValue: Swift.Int)
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+@_inheritsConvenienceInitializers @objc public class ZHJRealTimeHealthDataProcessor : TrusangBluetooth.ZHJBaseProcessor {
+  @objc public static let shared: TrusangBluetooth.ZHJRealTimeHealthDataProcessor
+  public typealias RealTimeHealthDataAlarmBlock = ([TrusangBluetooth.ZHJHealthDataAlarm]) -> Swift.Void
+  public typealias ReadRealTimeHealthDataBlock = (TrusangBluetooth.ZHJHeartRateDetail, TrusangBluetooth.ZHJBloodPressureDetail, TrusangBluetooth.ZHJBloodOxygenDetail, TrusangBluetooth.ZHJStepDetail, TrusangBluetooth.ZHJTemperatureDetail) -> Swift.Void
+  @nonobjc override public init()
+  @objc public func readRealTimeHealthData(readHealthDataHandle: @escaping TrusangBluetooth.ZHJRealTimeHealthDataProcessor.ReadRealTimeHealthDataBlock)
+  @objc public func realTimeHealthDataAlarmDidReceived(healthDataAlarmHandle: @escaping TrusangBluetooth.ZHJRealTimeHealthDataProcessor.RealTimeHealthDataAlarmBlock)
+  @objc deinit
+}
+@_inheritsConvenienceInitializers @objc public class ZHJBloodOxygen : TrusangBluetooth.ZHJDeviceDataBaseModel {
+  @objc public var max: Swift.Int
+  @objc public var min: Swift.Int
+  @objc public var avg: Swift.Int
+  @objc public var details: [TrusangBluetooth.ZHJBloodOxygenDetail]
+  @objc override dynamic public init()
+  @objc deinit
+}
+@_inheritsConvenienceInitializers @objc public class ZHJBloodOxygenDetail : ObjectiveC.NSObject {
+  @objc public var dateTime: Swift.String
+  @objc public var BO: Swift.Int
+  @objc override dynamic public init()
+  @objc deinit
+}
+@_inheritsConvenienceInitializers @objc public class ZHJDeviceDataBaseModel : ObjectiveC.NSObject {
+  @objc public var mid: Swift.Int
+  @objc public var mac: Swift.String
+  @objc public var dateTime: Swift.String
+  @objc public var uploadStatus: Swift.Int
+  @objc public var deviceType: Swift.Int
+  @objc override dynamic public init()
+  @objc deinit
+}
+@_inheritsConvenienceInitializers @objc public class ZHJEnablePairProcessor : TrusangBluetooth.ZHJBaseProcessor {
+  @objc public static let shared: TrusangBluetooth.ZHJEnablePairProcessor
+  @nonobjc override public init()
+  @objc public func enablePair(setHandle: @escaping TrusangBluetooth.ZHJEnablePairProcessor.SetReturn)
+  @objc deinit
+}
+@_inheritsConvenienceInitializers @objc public class ZHJSportMode : TrusangBluetooth.ZHJDeviceDataBaseModel {
+  @objc public var sportType: Swift.Int
+  @objc public var duration: Swift.Int
+  @objc public var step: Swift.Int
+  @objc public var heartRate: Swift.Int
+  @objc public var pace: Swift.Int
+  @objc public var speed: Swift.Int
+  @objc public var calories: Swift.Int
+  @objc public var distance: Swift.Int
+  @objc public var interval: Swift.Int
+  @objc public var heartRateArr: [Swift.Int]
+  @objc public var stepArr: [Swift.Int]
+  @objc public var paceArr: [Swift.Int]
+  @objc public var coordinateArr: [Swift.String]
+  @objc override dynamic public init()
+  @objc deinit
+}
+@_inheritsConvenienceInitializers @objc public class ZHJDeviceConfig : ObjectiveC.NSObject {
+  @objc public var brightness: Swift.Int
+  @objc public var brightDuration: Swift.Int
+  @objc public var theme: Swift.Int
+  @objc public var language: TrusangBluetooth.ZHJlLanguage
+  @objc public var unit: TrusangBluetooth.ZHJUnit
+  @objc public var timeMode: TrusangBluetooth.ZHJTimeMode
+  @objc public var trunWrist: Swift.Bool
+  @objc public var musicCtrl: Swift.Bool
+  @objc public var notice: Swift.Bool
+  @objc public var temperatureUnit: TrusangBluetooth.ZHJTemperatureUnit
+  @objc public var wearStyle: TrusangBluetooth.ZHJWearStyle
+  @objc override dynamic public init()
+  @objc deinit
+}
+@_inheritsConvenienceInitializers @objc public class ZHJStepAndSleepProcessor : TrusangBluetooth.ZHJBaseProcessor {
+  @objc public static let shared: TrusangBluetooth.ZHJStepAndSleepProcessor
+  public typealias HistoryDataBlock = (TrusangBluetooth.ZHJStep, TrusangBluetooth.ZHJSleep) -> Swift.Void
+  public typealias CurrentStepBlock = (TrusangBluetooth.ZHJStep) -> Swift.Void
+  @nonobjc override public init()
+  @objc public func clearStepAndSleepRecord(clearHandle: @escaping TrusangBluetooth.ZHJStepAndSleepProcessor.SetReturn)
+  @objc public func readCurrentStep(currentStepHandle: @escaping TrusangBluetooth.ZHJStepAndSleepProcessor.CurrentStepBlock)
+  @objc public func readStepAndSleepHistoryRecord(date: Swift.String, historyDataHandle: @escaping TrusangBluetooth.ZHJStepAndSleepProcessor.HistoryDataBlock, historyDoneHandle: @escaping TrusangBluetooth.ZHJStepAndSleepProcessor.ProcessorReturn)
+  @objc deinit
+}
+@_inheritsConvenienceInitializers @objc public class ZHJWeatherProcessor : TrusangBluetooth.ZHJBaseProcessor {
+  @objc public static let shared: TrusangBluetooth.ZHJWeatherProcessor
+  @nonobjc override public init()
+  @objc public func syncWeather(today: TrusangBluetooth.ZHJWeather, tomorrow: TrusangBluetooth.ZHJWeather, dayAfterTomorrow: TrusangBluetooth.ZHJWeather, tempUnit: TrusangBluetooth.ZHJTemperatureUnit, setHandle: @escaping TrusangBluetooth.ZHJWeatherProcessor.SetReturn)
+  @objc deinit
+}
+extension TrusangBluetooth.ECGMeasuringState : Swift.Equatable {}
+extension TrusangBluetooth.ECGMeasuringState : Swift.Hashable {}
+extension TrusangBluetooth.ECGMeasuringState : Swift.RawRepresentable {}
+extension TrusangBluetooth.DeviceState : Swift.Equatable {}
+extension TrusangBluetooth.DeviceState : Swift.Hashable {}
+extension TrusangBluetooth.DeviceState : Swift.RawRepresentable {}
+extension TrusangBluetooth.ZHJBTManagerState : Swift.Equatable {}
+extension TrusangBluetooth.ZHJBTManagerState : Swift.Hashable {}
+extension TrusangBluetooth.ZHJBTManagerState : Swift.RawRepresentable {}
+extension TrusangBluetooth.ZHJBLE_Write_CMD : Swift.Equatable {}
+extension TrusangBluetooth.ZHJBLE_Write_CMD : Swift.Hashable {}
+extension TrusangBluetooth.ZHJBLE_Write_CMD : Swift.RawRepresentable {}
+extension TrusangBluetooth.ZHJBLE_Read_CMD : Swift.Equatable {}
+extension TrusangBluetooth.ZHJBLE_Read_CMD : Swift.Hashable {}
+extension TrusangBluetooth.ZHJBLE_Read_CMD : Swift.RawRepresentable {}
+extension TrusangBluetooth.ZHJlLanguage : Swift.Equatable {}
+extension TrusangBluetooth.ZHJlLanguage : Swift.Hashable {}
+extension TrusangBluetooth.ZHJlLanguage : Swift.RawRepresentable {}
+extension TrusangBluetooth.ZHJTimeMode : Swift.Equatable {}
+extension TrusangBluetooth.ZHJTimeMode : Swift.Hashable {}
+extension TrusangBluetooth.ZHJTimeMode : Swift.RawRepresentable {}
+extension TrusangBluetooth.ZHJUnit : Swift.Equatable {}
+extension TrusangBluetooth.ZHJUnit : Swift.Hashable {}
+extension TrusangBluetooth.ZHJUnit : Swift.RawRepresentable {}
+extension TrusangBluetooth.ZHJTemperatureUnit : Swift.Equatable {}
+extension TrusangBluetooth.ZHJTemperatureUnit : Swift.Hashable {}
+extension TrusangBluetooth.ZHJTemperatureUnit : Swift.RawRepresentable {}
+extension TrusangBluetooth.ZHJWearStyle : Swift.Equatable {}
+extension TrusangBluetooth.ZHJWearStyle : Swift.Hashable {}
+extension TrusangBluetooth.ZHJWearStyle : Swift.RawRepresentable {}
+extension TrusangBluetooth.ZHJBLEError : Swift.Equatable {}
+extension TrusangBluetooth.ZHJBLEError : Swift.Hashable {}
+extension TrusangBluetooth.ZHJBLEError : Swift.RawRepresentable {}
+extension TrusangBluetooth.ZHJSex : Swift.Equatable {}
+extension TrusangBluetooth.ZHJSex : Swift.Hashable {}
+extension TrusangBluetooth.ZHJSex : Swift.RawRepresentable {}
+extension TrusangBluetooth.ZHJAlarmClockType : Swift.Equatable {}
+extension TrusangBluetooth.ZHJAlarmClockType : Swift.Hashable {}
+extension TrusangBluetooth.ZHJAlarmClockType : Swift.RawRepresentable {}
+extension TrusangBluetooth.ZHJSportTargetType : Swift.Equatable {}
+extension TrusangBluetooth.ZHJSportTargetType : Swift.Hashable {}
+extension TrusangBluetooth.ZHJSportTargetType : Swift.RawRepresentable {}
+extension TrusangBluetooth.ZHJMessageNoticeType : Swift.Equatable {}
+extension TrusangBluetooth.ZHJMessageNoticeType : Swift.Hashable {}
+extension TrusangBluetooth.ZHJMessageNoticeType : Swift.RawRepresentable {}
+extension TrusangBluetooth.ZHJDeviceControlType : Swift.Equatable {}
+extension TrusangBluetooth.ZHJDeviceControlType : Swift.Hashable {}
+extension TrusangBluetooth.ZHJDeviceControlType : Swift.RawRepresentable {}
+extension TrusangBluetooth.ZHJCallContrl : Swift.Equatable {}
+extension TrusangBluetooth.ZHJCallContrl : Swift.Hashable {}
+extension TrusangBluetooth.ZHJCallContrl : Swift.RawRepresentable {}
+extension TrusangBluetooth.ZHJSOSContrl : Swift.Equatable {}
+extension TrusangBluetooth.ZHJSOSContrl : Swift.Hashable {}
+extension TrusangBluetooth.ZHJSOSContrl : Swift.RawRepresentable {}
+extension TrusangBluetooth.ZHJPhotoContrl : Swift.Equatable {}
+extension TrusangBluetooth.ZHJPhotoContrl : Swift.Hashable {}
+extension TrusangBluetooth.ZHJPhotoContrl : Swift.RawRepresentable {}
+extension TrusangBluetooth.ZHJMusicContrl : Swift.Equatable {}
+extension TrusangBluetooth.ZHJMusicContrl : Swift.Hashable {}
+extension TrusangBluetooth.ZHJMusicContrl : Swift.RawRepresentable {}
+extension TrusangBluetooth.ZHJFindContrl : Swift.Equatable {}
+extension TrusangBluetooth.ZHJFindContrl : Swift.Hashable {}
+extension TrusangBluetooth.ZHJFindContrl : Swift.RawRepresentable {}
+extension TrusangBluetooth.ZHJQuickReplyContrl : Swift.Equatable {}
+extension TrusangBluetooth.ZHJQuickReplyContrl : Swift.Hashable {}
+extension TrusangBluetooth.ZHJQuickReplyContrl : Swift.RawRepresentable {}
+extension TrusangBluetooth.ZHJFamliyCallContrl : Swift.Equatable {}
+extension TrusangBluetooth.ZHJFamliyCallContrl : Swift.Hashable {}
+extension TrusangBluetooth.ZHJFamliyCallContrl : Swift.RawRepresentable {}
+extension TrusangBluetooth.ZHJGPSContrl : Swift.Equatable {}
+extension TrusangBluetooth.ZHJGPSContrl : Swift.Hashable {}
+extension TrusangBluetooth.ZHJGPSContrl : Swift.RawRepresentable {}
+extension TrusangBluetooth.ZHJStepAndSleepSelectType : Swift.Equatable {}
+extension TrusangBluetooth.ZHJStepAndSleepSelectType : Swift.Hashable {}
+extension TrusangBluetooth.ZHJStepAndSleepSelectType : Swift.RawRepresentable {}
+extension TrusangBluetooth.ZHJStepAndSleepDataType : Swift.Equatable {}
+extension TrusangBluetooth.ZHJStepAndSleepDataType : Swift.Hashable {}
+extension TrusangBluetooth.ZHJStepAndSleepDataType : Swift.RawRepresentable {}
+extension TrusangBluetooth.ZHJSleepType : Swift.Equatable {}
+extension TrusangBluetooth.ZHJSleepType : Swift.Hashable {}
+extension TrusangBluetooth.ZHJSleepType : Swift.RawRepresentable {}
+extension TrusangBluetooth.ZHJHR_BP_BOSelectType : Swift.Equatable {}
+extension TrusangBluetooth.ZHJHR_BP_BOSelectType : Swift.Hashable {}
+extension TrusangBluetooth.ZHJHR_BP_BOSelectType : Swift.RawRepresentable {}
+extension TrusangBluetooth.ZHJTemperatureSelectType : Swift.Equatable {}
+extension TrusangBluetooth.ZHJTemperatureSelectType : Swift.Hashable {}
+extension TrusangBluetooth.ZHJTemperatureSelectType : Swift.RawRepresentable {}
+extension TrusangBluetooth.ZHJSportModeType : Swift.Equatable {}
+extension TrusangBluetooth.ZHJSportModeType : Swift.Hashable {}
+extension TrusangBluetooth.ZHJSportModeType : Swift.RawRepresentable {}
+extension TrusangBluetooth.ZHJSportModeDataType : Swift.Equatable {}
+extension TrusangBluetooth.ZHJSportModeDataType : Swift.Hashable {}
+extension TrusangBluetooth.ZHJSportModeDataType : Swift.RawRepresentable {}
+extension TrusangBluetooth.ZHJBleApiCMD : Swift.Equatable {}
+extension TrusangBluetooth.ZHJBleApiCMD : Swift.Hashable {}
+extension TrusangBluetooth.ZHJBleApiCMD : Swift.RawRepresentable {}
+extension TrusangBluetooth.ECGResult : Swift.Equatable {}
+extension TrusangBluetooth.ECGResult : Swift.Hashable {}
+extension TrusangBluetooth.ECGResult : Swift.RawRepresentable {}
+extension TrusangBluetooth.Bit : Swift.Equatable {}
+extension TrusangBluetooth.Bit : Swift.Hashable {}
+extension TrusangBluetooth.Bit : Swift.RawRepresentable {}
+extension TrusangBluetooth.HealthDataAlarmType : Swift.Equatable {}
+extension TrusangBluetooth.HealthDataAlarmType : Swift.Hashable {}
+extension TrusangBluetooth.HealthDataAlarmType : Swift.RawRepresentable {}
