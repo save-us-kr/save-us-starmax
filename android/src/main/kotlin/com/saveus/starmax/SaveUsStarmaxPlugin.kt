@@ -492,26 +492,26 @@ class SaveUsStarmaxPlugin : FlutterPlugin, MethodCallHandler {
     private fun notify(value: ByteArray?): String {
         if (value != null) {
             try {
-                Log.d(
-                    this.javaClass.simpleName,
-                    "비교 값 : ${value}"
-                )
                 val response = starmaxNotify.notify(value)
 
-                Log.d(
-                    this.javaClass.simpleName,
-                    "${response.type}:: ${value.size} ${value.contentToString()}"
-                )
                 if (response.type == NotifyType.CrcFailure) {
                     Log.d(this.javaClass.simpleName, "onCharacteristicChanged :: crc failure")
                 }
                 if (response.type == NotifyType.Failure) {
                     Log.d(this.javaClass.simpleName, "onCharacteristicChanged :: failure")
                 }
+                Log.d(
+                    this.javaClass.simpleName,
+                    "${response.type}:: ${value.size} ${response}"
+                )
                 // SDK로 보내면 [218 , , , ] 이런식으로 보내면 사람이 읽을수 있게 리턴을 해줌.
                 // IOS도 SDK로 호출을 하고 나서 받는 작업 해여함
                 return response.toJson()
             } catch (e: Exception) {
+                Log.d(
+                    this.javaClass.simpleName,
+                    "${value.size}:: ${value} ${e.message}"
+                )
                 return e.message ?: ""
             }
         }
