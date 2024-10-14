@@ -23,8 +23,6 @@ Future main() async {
   runApp(MyApp(
     prefs: await SharedPreferences.getInstance(),
   ));
-
-
 }
 
 Future<void> requestPermissions() async {
@@ -41,19 +39,13 @@ Future<void> requestPermissions() async {
   }
 }
 
-
-
 class MyApp extends StatefulWidget {
   const MyApp({
     super.key,
     this.prefs,
   });
-<<<<<<< HEAD
 
-  final SharedPreferences prefs;
-=======
   final SharedPreferences? prefs;
->>>>>>> dev
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -100,7 +92,7 @@ class _MyAppState extends State<MyApp> {
     });
 
     FlutterBluePlus.isScanning.listen(
-          (state) {
+      (state) {
         if (kDebugMode) {
           print('isScanning:: $state');
         }
@@ -113,11 +105,11 @@ class _MyAppState extends State<MyApp> {
       for (final s in (await mtu.device.discoverServices())
           .where((e) => e.serviceUuid == Guid(_serviceUuid))) {
         for (final c in s.characteristics.where(
-                (e) => e.characteristicUuid == Guid(_notifyCharacteristicUUID))) {
+            (e) => e.characteristicUuid == Guid(_notifyCharacteristicUUID))) {
           for (final d in c.descriptors) {
             try {
               // Ios 에서는 주석을 해야 됨
-              if(Platform.isAndroid){
+              if (Platform.isAndroid) {
                 await d.write([1, 0]);
               }
             } catch (error) {
@@ -158,7 +150,6 @@ class _MyAppState extends State<MyApp> {
       final str = await _saveUsStarmaxPlugin.notify({
         'value': Uint8List.fromList(cr.value),
       });
-
 
       if (str != null && str.isNotEmpty) {
         final json = jsonDecode(str);
@@ -241,7 +232,6 @@ class _MyAppState extends State<MyApp> {
           default:
             if (kDebugMode) {
               print('onCharacteristicReceived:: $json');
-
             }
             return;
         }
@@ -263,7 +253,7 @@ class _MyAppState extends State<MyApp> {
         for (final s in dw.descriptor.device.servicesList
             .where((e) => e.serviceUuid == Guid(_serviceUuid))) {
           for (final c in s.characteristics.where(
-                  (e) => Guid(_writeCharacteristicsUuid) == e.characteristicUuid)) {
+              (e) => Guid(_writeCharacteristicsUuid) == e.characteristicUuid)) {
             try {
               final value = await SaveUsStarmaxPlatform.instance.pairing();
 
@@ -309,8 +299,6 @@ class _MyAppState extends State<MyApp> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-
-
               TextButton(
                 onPressed: () async {
                   final starmaxArr = await _saveUsStarmaxPlugin.getVersion();
@@ -476,8 +464,7 @@ class _MyAppState extends State<MyApp> {
                 ),
               ),*/
 
-
-           /*   TextButton(
+              /*   TextButton(
                 onPressed: () async {
                   final metHistoryData = await _saveUsStarmaxPlugin.getMetHistory({
                     'year': 2024,
@@ -501,7 +488,7 @@ class _MyAppState extends State<MyApp> {
                 ),
               ),*/
 
-       /*       TextButton(
+              /*       TextButton(
                 onPressed: () async {
                   final tempHistoryData = await _saveUsStarmaxPlugin.getTempHistory({
                     'year': 2024,
@@ -525,7 +512,7 @@ class _MyAppState extends State<MyApp> {
                 ),
               )*/
 
-         /*     TextButton(
+              /*     TextButton(
                 onPressed: () async {
                   final longSitData = await _saveUsStarmaxPlugin.getLongSit();
                   if (longSitData != null) {
@@ -582,7 +569,7 @@ class _MyAppState extends State<MyApp> {
                 ),
               ),*/
 
- /*             TextButton(
+              /*             TextButton(
                 onPressed: () async {
                   final result = await _saveUsStarmaxPlugin.setDrinkWater({
                     'onOff': true,
@@ -605,7 +592,7 @@ class _MyAppState extends State<MyApp> {
                 ),
               ),*/
 
- /*             TextButton(
+              /*             TextButton(
                 onPressed: () async {
                   final result = await _saveUsStarmaxPlugin.setNotDisturb({
                     'onOff': true,
@@ -650,7 +637,7 @@ class _MyAppState extends State<MyApp> {
                 ),
               ),*/
 
-           /*   TextButton(
+              /*   TextButton(
                 onPressed: () async {
                   final stateData = await _saveUsStarmaxPlugin.setState({
                     'timeFormat': 1,
@@ -729,13 +716,10 @@ class _MyAppState extends State<MyApp> {
                 ),
               ),*/
 
-
-
-
               TextButton(
                 onPressed: () async {
                   final starmaxArr =
-                  await _saveUsStarmaxPlugin.getValidHistoryDates(
+                      await _saveUsStarmaxPlugin.getValidHistoryDates(
                     /* HistoryType : kotlin.Enum<com.starmax.bluetoothsdk.data.HistoryType>
                       Sport = 0,
                       Step = 1,
@@ -768,7 +752,7 @@ class _MyAppState extends State<MyApp> {
               TextButton(
                 onPressed: () async {
                   final starmaxArr =
-                  await _saveUsStarmaxPlugin.getHeartRateHistory({
+                      await _saveUsStarmaxPlugin.getHeartRateHistory({
                     'year': 2024,
                     'month': 7,
                     'date': 8,
@@ -794,7 +778,7 @@ class _MyAppState extends State<MyApp> {
               TextButton(
                 onPressed: () async {
                   final starmaxArr =
-                  await _saveUsStarmaxPlugin.getBloodSugarHistory({
+                      await _saveUsStarmaxPlugin.getBloodSugarHistory({
                     'year': 2024,
                     'month': 10,
                     'date': 3,
@@ -929,19 +913,19 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future _request(BluetoothDevice device, Uint8List value) async {
-      for (final s in (await device.discoverServices())
-          .where((e) => e.serviceUuid == Guid(_serviceUuid))) {
-        for (final c in s.characteristics.where(
-                (e) => Guid(_writeCharacteristicsUuid) == e.characteristicUuid)) {
-          try {
-            await c.write(value);
-          } catch (error) {
-            if (kDebugMode) {
-              print('$value:: $error');
-            }
+    for (final s in (await device.discoverServices())
+        .where((e) => e.serviceUuid == Guid(_serviceUuid))) {
+      for (final c in s.characteristics.where(
+          (e) => Guid(_writeCharacteristicsUuid) == e.characteristicUuid)) {
+        try {
+          await c.write(value);
+        } catch (error) {
+          if (kDebugMode) {
+            print('$value:: $error');
           }
         }
       }
+    }
   }
 
   Future _startScan() async {
@@ -991,7 +975,7 @@ class _MyAppState extends State<MyApp> {
 
   Future _connect(BluetoothDevice device) async {
     _streamConnectionState = device.connectionState.listen(
-          (BluetoothConnectionState state) async {
+      (BluetoothConnectionState state) async {
         if (state == BluetoothConnectionState.disconnected) {
           if (kDebugMode) {
             print(
@@ -1045,7 +1029,6 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
-
   Future requestPermissionForAndroid() async {
     final androidInfo = await DeviceInfoPlugin().androidInfo;
 
@@ -1056,7 +1039,7 @@ class _MyAppState extends State<MyApp> {
       case > 30:
         if (!await Permission.bluetoothScan.isGranted) {
           final bluetoothScanGrant =
-          await Permission.bluetoothScan.request().isGranted;
+              await Permission.bluetoothScan.request().isGranted;
 
           if (kDebugMode) {
             print('bluetoothScanGrant:: $bluetoothScanGrant');
@@ -1064,7 +1047,7 @@ class _MyAppState extends State<MyApp> {
         }
         if (!await Permission.bluetoothConnect.isGranted) {
           final bluetoothConnectGrant =
-          await Permission.bluetoothConnect.request().isGranted;
+              await Permission.bluetoothConnect.request().isGranted;
 
           if (kDebugMode) {
             print('bluetoothConnectGrant:: $bluetoothConnectGrant');
@@ -1093,7 +1076,8 @@ class _MyAppState extends State<MyApp> {
 
   int _index = 0;
 
-  BluetoothConnectionState _connectionState = BluetoothConnectionState.disconnected;
+  BluetoothConnectionState _connectionState =
+      BluetoothConnectionState.disconnected;
 
   late StreamSubscription<BluetoothConnectionState> _streamConnectionState;
 
