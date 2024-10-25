@@ -166,6 +166,12 @@ class MockSaveUsStarmaxPlatform
   Future<Uint8List?> getValidHistoryDates(Map<String, dynamic> param) {
     return Future.value(Uint8List(16));
   }
+
+  @override
+  Future<Uint8List?> setHealthOpen(Map<String, dynamic> param) {
+    // TODO: implement setHealthOpen
+    throw UnimplementedError();
+  }
 }
 
 void main() {

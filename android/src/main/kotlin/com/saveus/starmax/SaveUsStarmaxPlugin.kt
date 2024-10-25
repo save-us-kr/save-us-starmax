@@ -211,6 +211,17 @@ class SaveUsStarmaxPlugin : FlutterPlugin, MethodCallHandler {
                 )
             )
 
+            "setHealthOpen" -> result.success(
+                setHealthOpen(
+                    heartRate = call.argument("heartRate") ?: true,
+                    bloodPressure = call.argument("bloodPressure") ?: true,
+                    bloodOxygen = call.argument("bloodOxygen") ?: true,
+                    pressure = call.argument("pressure") ?: true,
+                    temp = call.argument("temp") ?: true,
+                    bloodSugar = call.argument("bloodSugar") ?: true
+                )
+            )
+
             "setState" -> result.success(
                 setState(
                     timeFormat = call.argument("timeFormat") ?: 1,
@@ -442,6 +453,25 @@ class SaveUsStarmaxPlugin : FlutterPlugin, MethodCallHandler {
             endMinute = endMinute,
             period = period,
             alarmThreshold = alarmThreshold
+        )
+    }
+
+    // 12.2.Set Health Data Detection Switch
+    private fun setHealthOpen(
+        heartRate: Boolean,
+        bloodPressure: Boolean,
+        bloodOxygen: Boolean,
+        pressure: Boolean,
+        temp: Boolean,
+        bloodSugar: Boolean
+    ): ByteArray {
+        return StarmaxSend().setHealthOpen(
+            heartRate = heartRate,
+            bloodPressure = bloodPressure,
+            bloodOxygen = bloodOxygen,
+            pressure = pressure,
+            temp = temp,
+            bloodSugar = bloodSugar
         )
     }
 
