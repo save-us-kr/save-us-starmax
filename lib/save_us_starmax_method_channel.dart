@@ -40,6 +40,11 @@ class MethodChannelSaveUsStarmax extends SaveUsStarmaxPlatform {
   }
 
   @override
+  Future<Uint8List?> setHealthOpen(Map<String, dynamic> param) async {
+    return await methodChannel.invokeMethod('setHealthOpen', param);
+  }
+
+  @override
   Future<Uint8List?> setHeartRateControl(Map<String, dynamic> param) async {
     return await methodChannel.invokeMethod('setHeartRateControl', param);
   }

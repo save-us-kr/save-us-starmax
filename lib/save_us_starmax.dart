@@ -32,6 +32,10 @@ class SaveUsStarmax {
     return SaveUsStarmaxPlatform.instance.setUserInfo(param);
   }
 
+  Future<Uint8List?> setHealthOpen(Map<String, dynamic> param) {
+    return SaveUsStarmaxPlatform.instance.setHealthOpen(param);
+  }
+
   Future<Uint8List?> setHeartRateControl(Map<String, dynamic> param) {
     return SaveUsStarmaxPlatform.instance.setHeartRateControl(param);
   }
