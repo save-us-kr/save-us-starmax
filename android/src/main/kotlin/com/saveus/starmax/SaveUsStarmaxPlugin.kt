@@ -1,4 +1,4 @@
-package save_us_starmax
+package com.saveus.starmax
 
 import android.util.Log
 
@@ -212,6 +212,17 @@ class SaveUsStarmaxPlugin : FlutterPlugin, MethodCallHandler {
                     endMinute = call.argument("endMinute") ?: 59,
                     period = call.argument("period") ?: 15,
                     alarmThreshold = call.argument("alarmThreshold") ?: 60
+                )
+            )
+
+            "setHealthOpen" -> result.success(
+                setHealthOpen(
+                    heartRate = call.argument("heartRate") ?: true,
+                    bloodPressure = call.argument("bloodPressure") ?: true,
+                    bloodOxygen = call.argument("bloodOxygen") ?: true,
+                    pressure = call.argument("pressure") ?: true,
+                    temp = call.argument("temp") ?: true,
+                    bloodSugar = call.argument("bloodSugar") ?: true
                 )
             )
 
@@ -449,6 +460,25 @@ class SaveUsStarmaxPlugin : FlutterPlugin, MethodCallHandler {
         )
     }
 
+    // 12.2.Set Health Data Detection Switch
+    private fun setHealthOpen(
+        heartRate: Boolean,
+        bloodPressure: Boolean,
+        bloodOxygen: Boolean,
+        pressure: Boolean,
+        temp: Boolean,
+        bloodSugar: Boolean
+    ): ByteArray {
+        return StarmaxSend().setHealthOpen(
+            heartRate = heartRate,
+            bloodPressure = bloodPressure,
+            bloodOxygen = bloodOxygen,
+            pressure = pressure,
+            temp = temp,
+            bloodSugar = bloodSugar
+        )
+    }
+
     // 2.2.Set Device Status
     private fun setState(
         timeFormat: Int,
@@ -496,26 +526,26 @@ class SaveUsStarmaxPlugin : FlutterPlugin, MethodCallHandler {
     private fun notify(value: ByteArray?): String {
         if (value != null) {
             try {
-                Log.d(
-                    this.javaClass.simpleName,
-                    "비교 값 : ${value}"
-                )
                 val response = starmaxNotify.notify(value)
 
-                Log.d(
-                    this.javaClass.simpleName,
-                    "${response.type}:: ${value.size} ${value.contentToString()}"
-                )
                 if (response.type == NotifyType.CrcFailure) {
                     Log.d(this.javaClass.simpleName, "onCharacteristicChanged :: crc failure")
                 }
                 if (response.type == NotifyType.Failure) {
                     Log.d(this.javaClass.simpleName, "onCharacteristicChanged :: failure")
                 }
+                Log.d(
+                    this.javaClass.simpleName,
+                    "${response.type}:: ${value.size} ${response}"
+                )
                 // SDK로 보내면 [218 , , , ] 이런식으로 보내면 사람이 읽을수 있게 리턴을 해줌.
                 // IOS도 SDK로 호출을 하고 나서 받는 작업 해여함
                 return response.toJson()
             } catch (e: Exception) {
+                Log.d(
+                    this.javaClass.simpleName,
+                    "${value.size}:: ${value} ${e.message}"
+                )
                 return e.message ?: ""
             }
         }

@@ -1,4 +1,4 @@
-group 'save_us_starmax'
+group 'com.saveus.starmax'
 version '1.0-SNAPSHOT'
 
 buildscript {
@@ -27,7 +27,7 @@ apply plugin: 'kotlin-android'
 
 android {
     if (project.android.hasProperty("namespace")) {
-        namespace 'save_us_starmax'
+        namespace 'com.saveus.starmax'
     }
     compileSdkVersion 33
 
