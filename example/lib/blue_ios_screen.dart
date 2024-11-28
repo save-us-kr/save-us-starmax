@@ -1,10 +1,13 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 
 class BluetoothScreen extends StatefulWidget {
+  const BluetoothScreen({super.key});
+
   @override
-  _BluetoothScreenState createState() => _BluetoothScreenState();
+  State createState() => _BluetoothScreenState();
 }
 
 class _BluetoothScreenState extends State<BluetoothScreen> {
@@ -12,7 +15,8 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
   List<DiscoveredDevice> connectedDevices = [];
   List<DiscoveredDevice> scannedDevices = [];
   DiscoveredDevice? selectedDevice;
-  BluetoothConnectionState _connectionState = BluetoothConnectionState.disconnected;
+  BluetoothConnectionState _connectionState =
+      BluetoothConnectionState.disconnected;
   late StreamSubscription<BluetoothConnectionState> _streamConnectionState;
   bool isConnecting = false;
   bool isDisconnecting = false;
@@ -25,14 +29,15 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
   }
 
   void startScanForDevices() {
-    Timer.periodic(Duration(seconds: 2), (Timer timer) {
-      FlutterBluePlus.startScan(timeout: Duration(seconds: 2));
+    Timer.periodic(const Duration(seconds: 2), (Timer timer) {
+      FlutterBluePlus.startScan(timeout: const Duration(seconds: 2));
       print("Scanning for devices...");
     });
 
     FlutterBluePlus.scanResults.listen((results) {
       for (ScanResult result in results) {
-        bool found = scannedDevices.any((device) => device.name == result.device.name);
+        bool found =
+            scannedDevices.any((device) => device.name == result.device.name);
         if (!found) {
           setState(() {
             scannedDevices.add(DiscoveredDevice(
@@ -43,7 +48,9 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
           });
         } else {
           setState(() {
-            scannedDevices.firstWhere((device) => device.name == result.device.name).rssi = result.rssi;
+            scannedDevices
+                .firstWhere((device) => device.name == result.device.name)
+                .rssi = result.rssi;
           });
         }
       }
@@ -51,8 +58,8 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
   }
 
   void checkConnectedDevices() async {
-    List<BluetoothDevice> devices = await FlutterBluePlus.connectedDevices;
-    devices.forEach((device) {
+    List<BluetoothDevice> devices = FlutterBluePlus.connectedDevices;
+    for (var device in devices) {
       setState(() {
         connectedDevices.add(DiscoveredDevice(
           name: device.name,
@@ -60,7 +67,7 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
           device: device,
         ));
       });
-    });
+    }
   }
 
   void connectToDevice(String name) async {
@@ -69,33 +76,32 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
     });
 
     try {
-      List<BluetoothDevice> connectedDevices = await FlutterBluePlus.connectedDevices;
+      List<BluetoothDevice> connectedDevices = FlutterBluePlus.connectedDevices;
       BluetoothDevice? device;
 
       try {
         device = connectedDevices.firstWhere((device) => device.name == name);
       } catch (e) {
-        device = scannedDevices.firstWhere((device) => device.name == name).device;
+        device =
+            scannedDevices.firstWhere((device) => device.name == name).device;
       }
 
-      if (device != null) {
-        await device.connect();
+      await device.connect();
+      setState(() {
+        selectedDevice = DiscoveredDevice(
+          name: device!.name,
+          rssi: 0, // 연결된 기기의 RSSI 값은 0으로 설정
+          device: device,
+        );
+      });
+      _streamConnectionState = device.state.listen((state) {
         setState(() {
-          selectedDevice = DiscoveredDevice(
-            name: device!.name,
-            rssi: 0, // 연결된 기기의 RSSI 값은 0으로 설정
-            device: device,
-          );
+          _connectionState = state;
         });
-        _streamConnectionState = device.state.listen((state) {
-          setState(() {
-            _connectionState = state;
-          });
-          if (state == BluetoothDeviceState.disconnected) {
-            print("Device disconnected: ${device!.id}");
-          }
-        });
-      }
+        if (state == BluetoothDeviceState.disconnected) {
+          print("Device disconnected: ${device!.id}");
+        }
+      });
     } catch (e) {
       print("Connection failed: $e");
     } finally {
@@ -115,7 +121,7 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
       setState(() {
         selectedDevice = null;
       });
-      _streamConnectionState?.cancel();
+      _streamConnectionState.cancel();
     }
 
     setState(() {
@@ -131,7 +137,7 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
 
   @override
   void dispose() {
-    _streamConnectionState?.cancel();
+    _streamConnectionState.cancel();
     super.dispose();
   }
 
@@ -140,20 +146,20 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: Text('Bluetooth Device Selection'),
+          title: const Text('Bluetooth Device Selection'),
         ),
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             if (connectedDevices.isNotEmpty) ...[
-              Text(
+              const Text(
                 'Connected Devices:',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: connectedDevices.map((device) {
@@ -163,16 +169,16 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
                   );
                 }).toList(),
               ),
-              Divider(),
+              const Divider(),
             ],
-            Text(
+            const Text(
               'Scanned Devices:',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: 4),
+            const SizedBox(height: 4),
             Expanded(
               child: ListView.builder(
                 itemCount: scannedDevices.length,
@@ -191,22 +197,26 @@ class _BluetoothScreenState extends State<BluetoothScreen> {
               children: [
                 // 연결 버튼
                 ElevatedButton(
-                  onPressed: selectedDevice != null ? null : () => connectToDevice(selectedDevice!.name),
-                  child: Text('Connect'),
+                  onPressed: selectedDevice != null
+                      ? null
+                      : () => connectToDevice(selectedDevice!.name),
+                  child: const Text('Connect'),
                 ),
                 // 연결 해제 버튼
                 ElevatedButton(
-                  onPressed: selectedDevice == null ? null : disconnectFromDevice,
-                  child: Text('Disconnect'),
+                  onPressed:
+                      selectedDevice == null ? null : disconnectFromDevice,
+                  child: const Text('Disconnect'),
                 ),
                 // 재연결 버튼
                 ElevatedButton(
                   onPressed: selectedDevice == null ? null : reconnectToDevice,
-                  child: Text('Reconnect'),
+                  child: const Text('Reconnect'),
                 ),
               ],
             ),
-            if (isConnecting || isDisconnecting) CircularProgressIndicator(),
+            if (isConnecting || isDisconnecting)
+              const CircularProgressIndicator(),
           ],
         ),
       ),
