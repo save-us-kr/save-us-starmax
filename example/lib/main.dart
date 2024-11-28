@@ -101,7 +101,7 @@ class _MyAppState extends State<MyApp> {
 
     // 페어링 하고 난 후 여기로 옴.
     FlutterBluePlus.events.onMtuChanged.listen((mtu) async {
-      print("Flutter onMtuChanged" + mtu.toString());
+      print("Flutter onMtuChanged$mtu");
       for (final s in (await mtu.device.discoverServices())
           .where((e) => e.serviceUuid == Guid(_serviceUuid))) {
         for (final c in s.characteristics.where(
